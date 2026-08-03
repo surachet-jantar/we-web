@@ -1,0 +1,79 @@
+.hero {
+    margin-top: 80px;
+}
+
+.swiper {
+    width: 100%;
+    height: 700px;
+}
+
+.swiper-slide {
+    position: relative;
+    overflow: hidden;
+}
+
+.swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .45);
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 8%;
+    transform: translateY(-50%);
+    color: white;
+    max-width: 600px;
+    z-index: 2;
+}
+
+.content h1 {
+    font-size: 60px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.content p {
+    font-size: 22px;
+    line-height: 1.8;
+    margin-bottom: 35px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 16px 40px;
+    background: #2196f3;
+    color: white;
+    text-decoration: none;
+    border-radius: 40px;
+    font-size: 20px;
+    transition: .3s;
+}
+
+.btn:hover {
+    background: #0d47a1;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: white;
+}
+
+.swiper-pagination-bullet {
+    background: white;
+    opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+    background: #2196f3;
+}

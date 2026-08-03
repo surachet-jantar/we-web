@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ครูคอมสอบเว็บ</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/slider.css">
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="images/logo.jpg" alt="logo">
+            <div class="logo-text">
+                <h2>ครูคอมสอบเว็บ</h2>
+                <span>Computer Learning</span>
+            </div>
+        </div>
+        <ul class="menu">
+            <li><a href="#home">หน้าแรก</a></li>
+            <li><a href="#products">สินค้า</a></li>
+            <li><a href="#about">เกี่ยวกับเว็บ</a></li>
+            <li><a href="#contact">หน้าติดต่อ</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Hero Slider -->
+<section class="hero" id="home">
+    <div class="swiper mySlider">
+        <div class="swiper-wrapper">
+            <!-- Slide 1 -->
+            <div class="swiper-slide">
+                <img src="images/slide1.jpg" alt="slide1">
+                <div class="overlay"></div>
+                <div class="content">
+                    <h1>เรียนสร้างเว็บไซต์<br>อย่างมืออาชีพ</h1>
+                    <p>
+                        HTML &bull; CSS &bull; JavaScript<br>
+                        เริ่มต้นจนสร้างเว็บไซต์ได้จริง
+                    </p>
+                    <a href="#products" class="btn">เริ่มเรียน</a>
+                </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="swiper-slide">
+                <img src="images/slide2.jpg" alt="slide2">
+                <div class="overlay"></div>
+                <div class="content">
+                    <h1>ฝึกทำโปรเจกต์จริง</h1>
+                    <p>
+                        เว็บไซต์บริษัท<br>
+                        เว็บไซต์ร้านค้า<br>
+                        Portfolio
+                    </p>
+                    <a href="#" class="btn">ดูผลงาน</a>
+                </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="swiper-slide">
+                <img src="images/slide3.jpg" alt="slide3">
+                <div class="overlay"></div>
+                <div class="content">
+                    <h1>AI ช่วยสร้างเว็บไซต์</h1>
+                    <p>
+                        ChatGPT<br>
+                        Gemini<br>
+                        AI Website
+                    </p>
+                    <a href="#" class="btn">เริ่มเลย</a>
+                </div>
+            </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+
+<!-- Products / Courses -->
+<section class="products" id="products">
+    <div class="container">
+        <h2 class="section-title">คอร์สเรียน</h2>
+        <p class="section-subtitle">เรียนเขียนเว็บไซต์ตั้งแต่เริ่มต้น จนสามารถสร้างงานจริงได้</p>
+        <div class="cards">
+            <div class="card">
+                <div class="icon">&lt;/&gt;</div>
+                <h3>HTML</h3>
+                <p>เรียนภาษา HTML โครงสร้างและการสร้างหน้าเว็บ</p>
+                <a href="#" class="card-btn">ดูรายละเอียด</a>
+            </div>
+            <div class="card">
+                <div class="icon" style="font-size:28px;">&#9632;</div>
+                <h3>CSS</h3>
+                <p>เรียนภาษา CSS การตกแต่งหน้าเว็บให้สวยงาม</p>
+                <a href="#" class="card-btn">ดูรายละเอียด</a>
+            </div>
+            <div class="card">
+                <div class="icon" style="font-size:28px;">&#9883;</div>
+                <h3>JavaScript</h3>
+                <p>เรียนภาษา JavaScript ทำให้เว็บมีปฏิกิริยาโต้ตอบ</p>
+                <a href="#" class="card-btn">ดูรายละเอียด</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+    <div class="container about-wrap">
+        <div class="about-img">
+            <img src="images/slide4.jpg" alt="about">
+        </div>
+        <div class="about-text">
+            <h2>เกี่ยวกับเว็บ</h2>
+            <p>
+                เว็บนี้เปิดขึ้นเพื่อให้บุคคลที่สนใจเรียนรู้
+                การพัฒนาเว็บไซต์ โดยเรารวบรวมเนื้อหาเกี่ยวกับ
+                HTML, CSS และ JavaScript ไว้ในที่เดียว
+                พร้อมให้คุณเรียนรู้ตามความสะดวก
+            </p>
+            <p>
+                ไม่ว่าคุณจะเป็นผู้เริ่มต้นหรือมีประสบการณ์แล้ว
+                เว็บนี้จะมีเนื้อหาที่เหมาะกับทุกระดับ
+                พร้อมโปรเจกต์จริงให้ฝึกทำจริง
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+    <div class="container">
+        <h2 class="section-title">ติดต่อเรา</h2>
+        <p class="section-subtitle">มีคำถาม? ติดต่อเราได้</p>
+        <div class="contact-wrap">
+            <div class="contact-info">
+                <div class="info-item">
+                    <div class="info-icon">&#9742;</div>
+                    <div>
+                        <h4>โทรศัพท์</h4>
+                        <p>089-xxx-xxxx</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">&#9993;</div>
+                    <div>
+                        <h4>อีเมล</h4>
+                        <p>info@krucomweb.com</p>
+                    </div>
+                </div>
+            </div>
+            <form class="contact-form">
+                <input type="text" placeholder="ชื่อ" required>
+                <input type="email" placeholder="อีเมล" required>
+                <textarea rows="5" placeholder="ข้อความ" required></textarea>
+                <button type="submit" class="btn">ส่งข้อความ</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 ครูคอมสอบเว็บ — Computer Learning</p>
+</footer>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="js/slider.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
