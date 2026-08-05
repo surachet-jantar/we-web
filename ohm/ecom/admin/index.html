@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="admin-layout">
+        <aside class="admin-sidebar">
+          <div class="admin-sidebar-title"><i class="fas fa-cog"></i></div>
+          <nav class="admin-sidebar-nav">
+            <a href="index.html" class="active"><i class="fas fa-chart-pie"></i></a>
+            <a href="products.html"><i class="fas fa-box"></i></a>
+            <a href="orders.html"><i class="fas fa-receipt"></i></a>
+            <a href="users.html"><i class="fas fa-users"></i></a>
+          </nav>
+        </aside>
+        <div class="admin-main">
+          <div class="admin-header">
+            <h2 id="admin-page-title">แดชบอร์ด</h2>
+          </div>
+          <div class="admin-stats" id="stats-container">
+            <div class="loading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      if (!requireAdmin()) return;
+
+      // Render sidebar with translations
+      document.querySelector('.admin-sidebar-title').innerHTML = '<i class="fas fa-cog"></i> ' + t('admin_title');
+      const navLinks = document.querySelectorAll('.admin-sidebar-nav a');
+      const keys = ['admin_dashboard', 'admin_products', 'admin_orders', 'admin_users'];
+      navLinks.forEach((a, i) => { a.innerHTML = a.querySelector('i').outerHTML + ' ' + t(keys[i]); });
+      document.getElementById('admin-page-title').textContent = t('admin_dashboard');
+
+      loadStats();
+    });
+
+    async function loadStats() {
+      try {
+        const [products, orders, users] = await Promise.all([
+          api.getProducts(),
+          api.getOrders(),
+          api.getUsers()
+        ]);
+        const revenue = orders.reduce((sum, o) => sum + Number(o.TotalPrice || 0), 0);
+
+        document.getElementById('stats-container').innerHTML = `
+          <div class="stat-card">
+            <div class="stat-card-icon blue"><i class="fas fa-box"></i></div>
+            <div class="stat-card-value">${products.length}</div>
+            <div class="stat-card-label">${t('admin_total_products')}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon amber"><i class="fas fa-receipt"></i></div>
+            <div class="stat-card-value">${orders.length}</div>
+            <div class="stat-card-label">${t('admin_total_orders')}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon purple"><i class="fas fa-users"></i></div>
+            <div class="stat-card-value">${users.length}</div>
+            <div class="stat-card-label">${t('admin_total_users')}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon green"><i class="fas fa-baht-sign"></i></div>
+            <div class="stat-card-value">${cart.formatPrice(revenue)}</div>
+            <div class="stat-card-label">${t('admin_total_revenue')}</div>
+          </div>`;
+      } catch (e) {
+        document.getElementById('stats-container').innerHTML = '<div class="empty-state"><p>' + t('error') + '</p></div>';
+      }
+    }
+  </script>
+</body>
+</html>

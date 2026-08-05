@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LCG SHOP — ร้านโปรเจคเตอร์</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">🎬 Projector Store</span>
+      <h1 id="hero-title">LCG SHOP</h1>
+      <p id="hero-subtitle">โปรเจคเตอร์คุณภาพ ราคาดีที่สุด</p>
+      <div class="hero-buttons">
+        <a href="products.html" class="btn btn-accent btn-lg" id="hero-cta"><i class="fas fa-shopping-bag"></i> <span>เลือกซื้อเลย</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="featured-title">สินค้าแนะนำ</h2>
+        <p></p>
+      </div>
+      <div class="product-grid" id="featured-grid">
+        <div class="loading"></div>
+      </div>
+      <div style="text-align:center;margin-top:1.5rem">
+        <a href="products.html" class="btn btn-outline" id="view-all-btn"><i class="fas fa-th-large"></i> ดูทั้งหมด</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us -->
+  <section class="section" style="background:var(--surface)">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="why-title">ทำไมต้องเลือกเรา</h2>
+      </div>
+      <div class="why-us-grid">
+        <div class="why-card">
+          <div class="why-card-icon blue"><i class="fas fa-award"></i></div>
+          <h3 id="why-1-title">สินค้าคุณภาพ</h3>
+          <p id="why-1-desc">โปรเจคเตอร์แท้ทุกแบรนด์ รับประกันศูนย์</p>
+        </div>
+        <div class="why-card">
+          <div class="why-card-icon amber"><i class="fas fa-tags"></i></div>
+          <h3 id="why-2-title">ราคาดีที่สุด</h3>
+          <p id="why-2-desc">ราคาถูกกว่าท้องตลาด พร้อมโปรโมชั่น</p>
+        </div>
+        <div class="why-card">
+          <div class="why-card-icon green"><i class="fas fa-truck"></i></div>
+          <h3 id="why-3-title">จัดส่งฟรี</h3>
+          <p id="why-3-desc">จัดส่งทั่วประเทศ ฟรี!</p>
+        </div>
+        <div class="why-card">
+          <div class="why-card-icon purple"><i class="fas fa-headset"></i></div>
+          <h3 id="why-4-title">บริการหลังขาย</h3>
+          <p id="why-4-desc">ทีมซัพพอร์ตดูแลตลอด</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="section">
+    <div class="container">
+      <div class="newsletter">
+        <h3 id="nl-title">รับข่าวสาร</h3>
+        <p id="nl-desc">สมัครรับข่าวโปรโมชั่นและสินค้าใหม่</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault();showToast(t('newsletter_btn')+'!');">
+          <input type="email" id="nl-email" required>
+          <button type="submit" id="nl-btn">สมัคร</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      renderNav();
+      renderFooter();
+
+      // i18n
+      document.getElementById('hero-title').textContent = t('hero_title');
+      document.getElementById('hero-subtitle').textContent = t('hero_subtitle');
+      document.getElementById('hero-cta').querySelector('span').textContent = t('hero_cta');
+      document.getElementById('featured-title').textContent = t('featured_title');
+      document.getElementById('view-all-btn').innerHTML = '<i class="fas fa-th-large"></i> ' + t('view_all');
+      document.getElementById('why-title').textContent = t('why_us_title');
+      document.getElementById('why-1-title').textContent = t('why_us_1_title');
+      document.getElementById('why-1-desc').textContent = t('why_us_1_desc');
+      document.getElementById('why-2-title').textContent = t('why_us_2_title');
+      document.getElementById('why-2-desc').textContent = t('why_us_2_desc');
+      document.getElementById('why-3-title').textContent = t('why_us_3_title');
+      document.getElementById('why-3-desc').textContent = t('why_us_3_desc');
+      document.getElementById('why-4-title').textContent = t('why_us_4_title');
+      document.getElementById('why-4-desc').textContent = t('why_us_4_desc');
+      document.getElementById('nl-title').textContent = t('newsletter_title');
+      document.getElementById('nl-desc').textContent = t('newsletter_desc');
+      document.getElementById('nl-email').placeholder = t('newsletter_placeholder');
+      document.getElementById('nl-btn').textContent = t('newsletter_btn');
+
+      // Load featured products
+      try {
+        const products = await api.getProducts();
+        const featured = products.slice(0, 4);
+        const grid = document.getElementById('featured-grid');
+        if (featured.length === 0) {
+          grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><p>' + t('no_results') + '</p></div>';
+          return;
+        }
+        grid.innerHTML = featured.map(p => buildProductCard(p)).join('');
+      } catch (e) {
+        document.getElementById('featured-grid').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><p>' + t('no_results') + '</p></div>';
+      }
+    });
+
+    function buildProductCard(p) {
+      const name = getField(p, 'Name');
+      const img = (p.ImageURLs && p.ImageURLs[0]) || 'https://via.placeholder.com/400x300/e2e8f0/64748b?text=Projector';
+      const hasSale = p.SalePrice && Number(p.SalePrice) > 0 && Number(p.SalePrice) < Number(p.RegularPrice);
+      const outOfStock = Number(p.Stock) <= 0;
+      let badge = '';
+      if (outOfStock) badge = '<span class="product-card-badge product-card-badge-out">' + t('product_out_stock') + '</span>';
+      else if (hasSale) badge = '<span class="product-card-badge">' + t('product_sale') + '</span>';
+
+      return `
+        <div class="product-card" onclick="location.href='product.html?id=${p.ID}'">
+          <div class="product-card-image">
+            <img src="${img}" alt="${name}" loading="lazy">
+            ${badge}
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-brand">${p.Brand || ''}</div>
+            <div class="product-card-name">${name}</div>
+            <div class="product-card-specs">
+              ${p.Resolution ? '<span>' + p.Resolution + '</span>' : ''}
+              ${p.ThrowType ? '<span>' + p.ThrowType + '</span>' : ''}
+            </div>
+            <div class="product-card-price">
+              ${hasSale ? '<span class="price-original">' + cart.formatPrice(p.RegularPrice) + '</span>' : ''}
+              <span class="price-current">${cart.formatPrice(hasSale ? p.SalePrice : p.RegularPrice)}</span>
+            </div>
+            <div class="product-card-btn">
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();addToCart('${p.ID}')" ${outOfStock ? 'disabled' : ''}>
+                <i class="fas fa-cart-plus"></i> ${t('product_add_cart')}
+              </button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function addToCart(id) {
+      if (!auth.isLoggedIn()) { showToast(t('login_title') + '...'); setTimeout(() => location.href = 'auth.html', 500); return; }
+      const p = await api.getProductById(id);
+      if (p) { cart.addItem(id, p, 1); showToast(t('product_add_cart') + ' ✓'); }
+    }
+  </script>
+</body>
+</html>

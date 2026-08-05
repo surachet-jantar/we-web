@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Orders — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="admin-layout">
+        <aside class="admin-sidebar">
+          <div class="admin-sidebar-title"><i class="fas fa-cog"></i></div>
+          <nav class="admin-sidebar-nav">
+            <a href="index.html"><i class="fas fa-chart-pie"></i></a>
+            <a href="products.html"><i class="fas fa-box"></i></a>
+            <a href="orders.html" class="active"><i class="fas fa-receipt"></i></a>
+            <a href="users.html"><i class="fas fa-users"></i></a>
+          </nav>
+        </aside>
+        <div class="admin-main">
+          <div class="admin-header">
+            <h2 id="admin-page-title"></h2>
+          </div>
+          <div class="admin-table-wrapper" id="orders-table-wrapper">
+            <div class="loading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      if (!requireAdmin()) return;
+
+      // Render sidebar with translations
+      document.querySelector('.admin-sidebar-title').innerHTML = '<i class="fas fa-cog"></i> ' + t('admin_title');
+      const navLinks = document.querySelectorAll('.admin-sidebar-nav a');
+      const keys = ['admin_dashboard', 'admin_products', 'admin_orders', 'admin_users'];
+      navLinks.forEach((a, i) => { a.innerHTML = a.querySelector('i').outerHTML + ' ' + t(keys[i]); });
+      document.getElementById('admin-page-title').textContent = t('admin_orders');
+
+      loadOrders();
+    });
+
+    async function loadOrders() {
+      try {
+        const orders = await api.getOrders();
+        const wrapper = document.getElementById('orders-table-wrapper');
+
+        if (orders.length === 0) {
+          wrapper.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><p>' + t('order_empty') + '</p></div>';
+          return;
+        }
+
+        orders.sort((a, b) => (b.CreatedAt || '').localeCompare(a.CreatedAt || ''));
+
+        wrapper.innerHTML = `
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>${t('order_id')}</th>
+                <th>${t('checkout_name')}</th>
+                <th>${t('checkout_phone')}</th>
+                <th>${t('checkout_address')}</th>
+                <th>${t('order_total')}</th>
+                <th>${t('order_status')}</th>
+                <th>${t('order_date')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${orders.map(o => `
+                <tr>
+                  <td style="font-size:.75rem;color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis">${o.ID}</td>
+                  <td><strong>${o.Name || ''}</strong></td>
+                  <td>${o.Phone || ''}</td>
+                  <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${o.Address || ''}">${o.Address || ''}</td>
+                  <td style="font-weight:700;color:var(--danger)">${cart.formatPrice(o.TotalPrice)}</td>
+                  <td>
+                    <select class="status-select" onchange="updateOrderStatus('${o.ID}', this.value)">
+                      <option value="pending" ${(o.Status||'pending')==='pending'?'selected':''}>${t('status_pending')}</option>
+                      <option value="shipped" ${o.Status==='shipped'?'selected':''}>${t('status_shipped')}</option>
+                      <option value="delivered" ${o.Status==='delivered'?'selected':''}>${t('status_delivered')}</option>
+                    </select>
+                  </td>
+                  <td style="font-size:.8rem">${(o.CreatedAt || '').split('T')[0]}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
+      } catch (e) {
+        document.getElementById('orders-table-wrapper').innerHTML = '<div class="empty-state"><p>' + t('error') + '</p></div>';
+      }
+    }
+
+    async function updateOrderStatus(id, status) {
+      try {
+        await api.updateOrder(id, { Status: status });
+        showToast(t('admin_save') + ' ✓');
+      } catch (e) {
+        showToast(t('error'));
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="admin-layout">
+        <aside class="admin-sidebar">
+          <div class="admin-sidebar-title"><i class="fas fa-cog"></i></div>
+          <nav class="admin-sidebar-nav">
+            <a href="index.html"><i class="fas fa-chart-pie"></i> <span id="nav-dashboard"></span></a>
+            <a href="products.html"><i class="fas fa-box"></i> <span id="nav-products"></span></a>
+            <a href="orders.html"><i class="fas fa-receipt"></i> <span id="nav-orders"></span></a>
+            <a href="users.html"><i class="fas fa-users"></i> <span id="nav-users"></span></a>
+            <a href="settings.html" class="active"><i class="fas fa-gear"></i> <span id="nav-settings"></span></a>
+          </nav>
+        </aside>
+        <div class="admin-main">
+          <div class="admin-header">
+            <h2 id="admin-page-title"></h2>
+          </div>
+
+          <!-- Store Settings -->
+          <div class="admin-form" style="margin-bottom:1.5rem">
+            <h3 style="margin-bottom:1rem"><i class="fas fa-store"></i> <span id="store-title"></span></h3>
+            <form onsubmit="saveStoreSettings(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>API URL</label>
+                  <input type="text" id="s-api-url" disabled style="opacity:.6">
+                  <small style="color:var(--text-muted)"><i class="fas fa-info-circle"></i> <span id="s-api-note"></span></small>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label id="lbl-admin-email"></label>
+                  <input type="email" id="s-admin-email" value="">
+                </div>
+                <div class="form-group">
+                  <label id="lbl-default-lang"></label>
+                  <select id="s-default-lang">
+                    <option value="th">🇹🇭 ไทย</option>
+                    <option value="en">🇬🇧 English</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> <span id="btn-save"></span></button>
+            </form>
+          </div>
+
+          <!-- Admin Account -->
+          <div class="admin-form" style="margin-bottom:1.5rem">
+            <h3 style="margin-bottom:1rem"><i class="fas fa-user-shield"></i> <span id="account-title"></span></h3>
+            <div class="profile-card">
+              <div class="profile-avatar" id="admin-avatar">A</div>
+              <div class="profile-info">
+                <h3 id="admin-name"></h3>
+                <p><i class="fas fa-envelope"></i> <span id="admin-email"></span></p>
+                <p><i class="fas fa-phone"></i> <span id="admin-phone"></span></p>
+                <p><span class="badge badge-admin">ADMIN</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- App Info -->
+          <div class="admin-form">
+            <h3 style="margin-bottom:1rem"><i class="fas fa-info-circle"></i> <span id="info-title"></span></h3>
+            <table class="specs-table" style="max-width:400px">
+              <tr><td><strong>App</strong></td><td>LCG SHOP</td></tr>
+              <tr><td><strong>Version</strong></td><td>1.0.0</td></tr>
+              <tr><td><strong>Framework</strong></td><td>HTML5 + CSS3 + Vanilla JS</td></tr>
+              <tr><td><strong>Backend</strong></td><td>Google Apps Script</td></tr>
+              <tr><td><strong>Database</strong></td><td>Google Sheets</td></tr>
+              <tr><td><strong>Storage</strong></td><td>Google Drive</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      if (!requireAdmin()) return;
+
+      // Sidebar labels
+      document.querySelector('.admin-sidebar-title').innerHTML = '<i class="fas fa-cog"></i> ' + t('admin_title');
+      document.getElementById('nav-dashboard').textContent = t('admin_dashboard');
+      document.getElementById('nav-products').textContent = t('admin_products');
+      document.getElementById('nav-orders').textContent = t('admin_orders');
+      document.getElementById('nav-users').textContent = t('admin_users');
+      document.getElementById('nav-settings').textContent = t('nav_settings');
+
+      // Page
+      document.getElementById('admin-page-title').textContent = t('nav_settings');
+      document.getElementById('store-title').textContent = t('store_settings');
+      document.getElementById('s-api-note').textContent = t('store_settings_api_note');
+      document.getElementById('lbl-admin-email').textContent = t('store_settings_admin_email');
+      document.getElementById('lbl-default-lang').textContent = t('store_settings_default_lang');
+      document.getElementById('btn-save').textContent = t('save');
+      document.getElementById('account-title').textContent = t('store_settings_admin_account');
+      document.getElementById('info-title').textContent = t('store_settings_app_info');
+
+      loadSettings();
+    });
+
+    function loadSettings() {
+      document.getElementById('s-api-url').value = CONFIG.API_URL || '';
+      document.getElementById('s-admin-email').value = CONFIG.ADMIN_EMAIL || '';
+      document.getElementById('s-default-lang').value = CONFIG.DEFAULT_LANG || 'th';
+
+      const user = auth.getUser();
+      if (user) {
+        document.getElementById('admin-avatar').textContent = (user.Name || 'A')[0].toUpperCase();
+        document.getElementById('admin-name').textContent = user.Name || 'Admin';
+        document.getElementById('admin-email').textContent = user.Email || '';
+        document.getElementById('admin-phone').textContent = user.Phone || '';
+      }
+    }
+
+    function saveStoreSettings(e) {
+      e.preventDefault();
+      const lang = document.getElementById('s-default-lang').value;
+      localStorage.setItem('lcg_lang', lang);
+      showToast(t('save') + ' ✓');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Form — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="admin-layout">
+        <aside class="admin-sidebar">
+          <div class="admin-sidebar-title"><i class="fas fa-cog"></i></div>
+          <nav class="admin-sidebar-nav">
+            <a href="index.html"><i class="fas fa-chart-pie"></i></a>
+            <a href="products.html" class="active"><i class="fas fa-box"></i></a>
+            <a href="orders.html"><i class="fas fa-receipt"></i></a>
+            <a href="users.html"><i class="fas fa-users"></i></a>
+          </nav>
+        </aside>
+        <div class="admin-main">
+          <div class="admin-header">
+            <h2 id="form-title"></h2>
+          </div>
+          <div class="admin-form">
+            <form id="product-form" onsubmit="saveProduct(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Name (TH)</label>
+                  <input type="text" id="f-name-th" required>
+                </div>
+                <div class="form-group">
+                  <label>Name (EN)</label>
+                  <input type="text" id="f-name-en" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label id="lbl-brand"></label>
+                  <input type="text" id="f-brand" required>
+                </div>
+                <div class="form-group">
+                  <label id="lbl-resolution"></label>
+                  <input type="text" id="f-resolution" placeholder="1080p, 4K UHD...">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label id="lbl-lumens"></label>
+                  <input type="number" id="f-lumens">
+                </div>
+                <div class="form-group">
+                  <label id="lbl-throw"></label>
+                  <input type="text" id="f-throw" placeholder="Standard / Short Throw">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label id="lbl-connectivity"></label>
+                  <input type="text" id="f-connectivity" placeholder="HDMI, WiFi, USB-C">
+                </div>
+                <div class="form-group">
+                  <label id="lbl-contrast"></label>
+                  <input type="text" id="f-contrast" placeholder="100000:1">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Regular Price (฿)</label>
+                  <input type="number" id="f-regular-price" required min="0">
+                </div>
+                <div class="form-group">
+                  <label>Sale Price (฿)</label>
+                  <input type="number" id="f-sale-price" min="0" placeholder="0">
+                </div>
+              </div>
+              <div class="form-group">
+                <label id="lbl-stock"></label>
+                <input type="number" id="f-stock" required min="0" value="0">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Description (TH)</label>
+                  <textarea id="f-desc-th" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Description (EN)</label>
+                  <textarea id="f-desc-en" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-cloud-arrow-up"></i> Upload Images (from device)</label>
+                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-files').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleFiles(event.dataTransfer.files)">
+                  <i class="fas fa-images" style="font-size:2rem;color:var(--text-muted);margin-bottom:.5rem"></i>
+                  <p>Drag & drop images here or <strong>click to browse</strong></p>
+                  <small>PNG, JPG, WEBP — max 5MB each</small>
+                </div>
+                <input type="file" id="f-files" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+                <div id="upload-preview" class="upload-preview"></div>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-link"></i> Or paste Image URLs (one per line)</label>
+                <textarea id="f-images" rows="3" placeholder="https://example.com/image.jpg"></textarea>
+              </div>
+              <input type="hidden" id="f-uploaded-urls" value="">
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg" id="save-btn"><i class="fas fa-save"></i> <span id="btn-save"></span></button>
+                <a href="products.html" class="btn btn-outline btn-lg" id="cancel-btn"><i class="fas fa-times"></i> <span id="btn-cancel"></span></a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/nav.js"></script>
+  <script>
+    let editingId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      renderNav();
+      renderFooter();
+      if (!requireAdmin()) return;
+
+      // Render sidebar with translations
+      document.querySelector('.admin-sidebar-title').innerHTML = '<i class="fas fa-cog"></i> ' + t('admin_title');
+      const navLinks = document.querySelectorAll('.admin-sidebar-nav a');
+      const navKeys = ['admin_dashboard', 'admin_products', 'admin_orders', 'admin_users'];
+      navLinks.forEach((a, i) => { a.innerHTML = a.querySelector('i').outerHTML + ' ' + t(navKeys[i]); });
+      document.getElementById('btn-save').textContent = t('admin_save');
+      document.getElementById('btn-cancel').textContent = t('admin_cancel');
+      document.getElementById('lbl-brand').textContent = t('product_brand');
+      document.getElementById('lbl-resolution').textContent = t('product_resolution');
+      document.getElementById('lbl-lumens').textContent = t('product_lumens');
+      document.getElementById('lbl-throw').textContent = t('product_throw');
+      document.getElementById('lbl-connectivity').textContent = t('product_connectivity');
+      document.getElementById('lbl-contrast').textContent = t('product_contrast');
+      document.getElementById('lbl-stock').textContent = t('product_stock');
+
+      editingId = new URLSearchParams(window.location.search).get('id');
+      if (editingId) {
+        document.getElementById('form-title').textContent = t('admin_edit_product');
+        try {
+          const p = await api.getProductById(editingId);
+          if (p) {
+            document.getElementById('f-name-th').value = p.Name_TH || '';
+            document.getElementById('f-name-en').value = p.Name_EN || '';
+            document.getElementById('f-brand').value = p.Brand || '';
+            document.getElementById('f-resolution').value = p.Resolution || '';
+            document.getElementById('f-lumens').value = p.Lumens || '';
+            document.getElementById('f-throw').value = p.ThrowType || '';
+            document.getElementById('f-connectivity').value = p.Connectivity || '';
+            document.getElementById('f-contrast').value = p.ContrastRatio || '';
+            document.getElementById('f-regular-price').value = p.RegularPrice || '';
+            document.getElementById('f-sale-price').value = p.SalePrice || '';
+            document.getElementById('f-stock').value = p.Stock || 0;
+            document.getElementById('f-desc-th').value = p.Description_TH || '';
+            document.getElementById('f-desc-en').value = p.Description_EN || '';
+            document.getElementById('f-images').value = (p.ImageURLs || []).join('\n');
+          }
+        } catch (e) { showToast(t('error')); }
+      } else {
+        document.getElementById('form-title').textContent = t('admin_add_product');
+      }
+    });
+
+    let pendingFiles = [];
+
+    function handleFiles(files) {
+      Array.from(files).forEach(f => {
+        if (!f.type.startsWith('image/')) return;
+        if (f.size > 5 * 1024 * 1024) { showToast('File too large: ' + f.name); return; }
+        pendingFiles.push(f);
+      });
+      renderUploadPreview();
+    }
+
+    function renderUploadPreview() {
+      const container = document.getElementById('upload-preview');
+      container.innerHTML = pendingFiles.map((f, i) => {
+        const url = URL.createObjectURL(f);
+        return `<div class="upload-thumb">
+          <img src="${url}" alt="${f.name}">
+          <button type="button" class="upload-remove" onclick="removeUpload(${i})">×</button>
+          <span class="upload-name">${f.name}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function removeUpload(i) {
+      pendingFiles.splice(i, 1);
+      renderUploadPreview();
+    }
+
+    async function uploadFilesToDrive(files) {
+      const urls = [];
+      for (const f of files) {
+        const base64 = await fileToBase64(f);
+        try {
+          const res = await fetch(CONFIG.API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: 'uploadImage', fileName: f.name, mimeType: f.type, base64: base64.split(',')[1] })
+          });
+          // no-cors returns opaque response, assume success
+          // Use a public-viewable URL pattern for the Drive folder
+          urls.push(`https://drive.google.com/uc?export=view&id=PENDING`);
+        } catch (err) { console.error('Upload failed:', f.name, err); }
+      }
+      return urls;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function saveProduct(e) {
+      e.preventDefault();
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('loading');
+
+      // Combine uploaded URLs + manual URLs
+      let images = [];
+
+      // Upload files if any
+      if (pendingFiles.length > 0) {
+        showToast('Uploading ' + pendingFiles.length + ' images...');
+        const uploaded = await uploadFilesToDrive(pendingFiles);
+        images = images.concat(uploaded);
+        pendingFiles = [];
+      }
+
+      // Add manual URLs
+      const imagesText = document.getElementById('f-images').value.trim();
+      if (imagesText) {
+        images = images.concat(imagesText.split('\n').map(u => u.trim()).filter(Boolean));
+      }
+
+      const data = {
+        Name_TH: document.getElementById('f-name-th').value,
+        Name_EN: document.getElementById('f-name-en').value,
+        Brand: document.getElementById('f-brand').value,
+        Resolution: document.getElementById('f-resolution').value,
+        Lumens: document.getElementById('f-lumens').value,
+        ThrowType: document.getElementById('f-throw').value,
+        Connectivity: document.getElementById('f-connectivity').value,
+        ContrastRatio: document.getElementById('f-contrast').value,
+        RegularPrice: Number(document.getElementById('f-regular-price').value),
+        SalePrice: Number(document.getElementById('f-sale-price').value) || 0,
+        Stock: Number(document.getElementById('f-stock').value),
+        Description_TH: document.getElementById('f-desc-th').value,
+        Description_EN: document.getElementById('f-desc-en').value,
+        ImageURLs: images,
+      };
+
+      try {
+        if (editingId) {
+          await api.updateProduct(editingId, data);
+        } else {
+          data.ID = 'PRD_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+          data.CreatedAt = new Date().toISOString();
+          await api.addProduct(data);
+        }
+        showToast(t('admin_save') + ' ✓');
+        setTimeout(() => location.href = 'products.html', 500);
+      } catch (err) {
+        showToast(t('error'));
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> <span>' + t('admin_save') + '</span>';
+      }
+    }
+  </script>
+</body>
+</html>

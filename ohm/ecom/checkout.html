@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="checkout-title">ชำระเงิน</h2>
+      </div>
+      <div id="checkout-content"></div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      document.getElementById('checkout-title').textContent = t('checkout_title');
+      if (!requireLogin()) return;
+      renderCheckout();
+    });
+
+    function renderCheckout() {
+      const items = cart.getItems();
+      if (items.length === 0) {
+        location.href = 'cart.html';
+        return;
+      }
+      const user = auth.getUser();
+      const lang = getLang();
+
+      const itemsHtml = items.map(item => {
+        const name = lang === 'th' ? item.name_TH : item.name_EN;
+        const price = item.salePrice > 0 ? item.salePrice : item.regularPrice;
+        return `<div class="cart-summary-row"><span>${name} × ${item.quantity}</span><span>${cart.formatPrice(price * item.quantity)}</span></div>`;
+      }).join('');
+
+      document.getElementById('checkout-content').innerHTML = `
+        <div class="checkout-layout">
+          <div class="checkout-form">
+            <h3><i class="fas fa-shipping-fast"></i> ${t('checkout_address')}</h3>
+            <form id="checkout-form" onsubmit="submitOrder(event)">
+              <div class="form-group">
+                <label>${t('checkout_name')}</label>
+                <input type="text" id="co-name" value="${user.Name || ''}" required>
+              </div>
+              <div class="form-group">
+                <label>${t('checkout_phone')}</label>
+                <input type="tel" id="co-phone" value="${user.Phone || ''}" required>
+              </div>
+              <div class="form-group">
+                <label>${t('checkout_address')}</label>
+                <textarea id="co-address" rows="3" required></textarea>
+              </div>
+              <div class="form-group">
+                <label>${t('checkout_note')}</label>
+                <textarea id="co-note" rows="2" placeholder=""></textarea>
+              </div>
+              <button type="submit" class="btn btn-accent btn-lg btn-full" id="co-submit-btn">
+                <i class="fas fa-check-circle"></i> ${t('checkout_submit')}
+              </button>
+            </form>
+          </div>
+          <div class="cart-summary">
+            <h3><i class="fas fa-receipt"></i> ${t('cart_total')}</h3>
+            ${itemsHtml}
+            <div class="cart-summary-total">
+              <span>${t('cart_total')}</span>
+              <span>${cart.formatPrice(cart.getTotal())}</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function submitOrder(e) {
+      e.preventDefault();
+      const btn = document.getElementById('co-submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('loading');
+
+      try {
+        const user = auth.getUser();
+        const order = cart.buildOrder(user);
+        order.Name = document.getElementById('co-name').value;
+        order.Phone = document.getElementById('co-phone').value;
+        order.Address = document.getElementById('co-address').value;
+        order.Notes = document.getElementById('co-note').value;
+        await api.addOrder(order);
+        cart.clear();
+        location.href = 'checkout-success.html?id=' + order.ID;
+      } catch (err) {
+        showToast(t('error'));
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> ' + t('checkout_submit');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="auth-page">
+    <div class="auth-card">
+      <!-- LOGIN FORM -->
+      <div id="login-section">
+        <div class="auth-card-icon"><i class="fas fa-sign-in-alt"></i></div>
+        <h2 id="login-title">เข้าสู่ระบบ</h2>
+        <p class="auth-card-subtitle">LCG SHOP</p>
+        <form class="auth-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> <span id="lbl-email">อีเมล</span></label>
+            <input type="email" id="login-email" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> <span id="lbl-password">รหัสผ่าน</span></label>
+            <input type="password" id="login-password" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn">
+            <i class="fas fa-sign-in-alt"></i> <span id="login-btn-text">เข้าสู่ระบบ</span>
+          </button>
+        </form>
+        <div class="auth-switch">
+          <span id="no-account">ยังไม่มีบัญชี?</span>
+          <a href="#" onclick="showRegister(); return false;" id="goto-register">สมัครสมาชิก</a>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM (hidden by default) -->
+      <div id="register-section" style="display:none">
+        <div class="auth-card-icon"><i class="fas fa-user-plus"></i></div>
+        <h2 id="register-title">สมัครสมาชิก</h2>
+        <p class="auth-card-subtitle">LCG SHOP</p>
+        <form class="auth-form" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> <span id="rbl-name">ชื่อ-นามสกุล</span></label>
+            <input type="text" id="reg-name" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> <span id="rbl-email">อีเมล</span></label>
+            <input type="email" id="reg-email" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-phone"></i> <span id="rbl-phone">เบอร์โทร</span></label>
+            <input type="tel" id="reg-phone">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> <span id="rbl-password">รหัสผ่าน</span></label>
+            <input type="password" id="reg-password" required minlength="6" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> <span id="rbl-confirm">ยืนยันรหัสผ่าน</span></label>
+            <input type="password" id="reg-confirm" required minlength="6" autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="reg-btn">
+            <i class="fas fa-user-plus"></i> <span id="reg-btn-text">สมัครสมาชิก</span>
+          </button>
+        </form>
+        <div class="auth-switch">
+          <span id="has-account">มีบัญชีแล้ว?</span>
+          <a href="#" onclick="showLogin(); return false;" id="goto-login">เข้าสู่ระบบ</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    let currentMode = 'login';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      if (auth.isLoggedIn()) { location.href = 'index.html'; return; }
+      applyLang();
+      // Check URL hash for mode
+      if (window.location.hash === '#register') showRegister();
+    });
+
+    function applyLang() {
+      document.getElementById('login-title').textContent = t('login_title');
+      document.getElementById('lbl-email').textContent = t('login_email');
+      document.getElementById('lbl-password').textContent = t('login_password');
+      document.getElementById('login-btn-text').textContent = t('login_submit');
+      document.getElementById('no-account').textContent = t('login_no_account');
+      document.getElementById('goto-register').textContent = t('login_register');
+      document.getElementById('register-title').textContent = t('register_title');
+      document.getElementById('rbl-name').textContent = t('register_name');
+      document.getElementById('rbl-email').textContent = t('register_email');
+      document.getElementById('rbl-phone').textContent = t('register_phone');
+      document.getElementById('rbl-password').textContent = t('register_password');
+      document.getElementById('rbl-confirm').textContent = t('register_confirm_password');
+      document.getElementById('reg-btn-text').textContent = t('register_submit');
+      document.getElementById('has-account').textContent = t('register_has_account');
+      document.getElementById('goto-login').textContent = t('register_login');
+    }
+
+    function showRegister() {
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('register-section').style.display = 'block';
+      currentMode = 'register';
+      document.title = t('register_title') + ' — LCG SHOP';
+    }
+
+    function showLogin() {
+      document.getElementById('register-section').style.display = 'none';
+      document.getElementById('login-section').style.display = 'block';
+      currentMode = 'login';
+      document.title = t('login_title') + ' — LCG SHOP';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('loading');
+      try {
+        await auth.login(
+          document.getElementById('login-email').value,
+          document.getElementById('login-password').value
+        );
+        showToast(t('nav_login') + ' ✓');
+        setTimeout(() => location.href = 'index.html', 300);
+      } catch (err) {
+        showToast(err.message || t('login_error'));
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>' + t('login_submit') + '</span>';
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const pw = document.getElementById('reg-password').value;
+      const cpw = document.getElementById('reg-confirm').value;
+      if (pw !== cpw) { showToast(getLang() === 'th' ? 'รหัสผ่านไม่ตรงกัน' : 'Passwords do not match'); return; }
+
+      const btn = document.getElementById('reg-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('loading');
+      try {
+        await auth.register({
+          name: document.getElementById('reg-name').value,
+          email: document.getElementById('reg-email').value,
+          password: pw,
+          phone: document.getElementById('reg-phone').value,
+        });
+        showToast(t('register_success'));
+        showLogin();
+      } catch (err) {
+        showToast(err.message || t('register_error'));
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> <span>' + t('register_submit') + '</span>';
+      }
+    }
+  </script>
+</body>
+</html>

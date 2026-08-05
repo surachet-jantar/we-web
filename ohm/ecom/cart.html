@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="cart-title">ตะกร้าสินค้า</h2>
+      </div>
+      <div id="cart-content"></div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      document.getElementById('cart-title').textContent = t('cart_title');
+      renderCart();
+    });
+
+    function renderCart() {
+      const items = cart.getItems();
+      const container = document.getElementById('cart-content');
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <p>${t('cart_empty')}</p>
+            <a href="products.html" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> ${t('cart_continue')}</a>
+          </div>`;
+        return;
+      }
+
+      const lang = getLang();
+      let itemsHtml = items.map(item => {
+        const img = item.image || 'https://via.placeholder.com/400x300/e2e8f0/64748b?text=Projector';
+        const name = lang === 'th' ? item.name_TH : item.name_EN;
+        const price = item.salePrice > 0 ? item.salePrice : item.regularPrice;
+        return `
+          <div class="cart-item">
+            <img class="cart-item-img" src="${img}" alt="${name}">
+            <div class="cart-item-info">
+              <div class="cart-item-brand">${item.brand || ''}</div>
+              <h4>${name || 'Product'}</h4>
+              <div class="cart-item-price">${cart.formatPrice(price)}</div>
+            </div>
+            <div class="cart-item-actions">
+              <div class="qty-control">
+                <button onclick="updateQty('${item.productId}', ${item.quantity - 1})">−</button>
+                <span>${item.quantity}</span>
+                <button onclick="updateQty('${item.productId}', ${item.quantity + 1})">+</button>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="removeItem('${item.productId}')" style="color:var(--danger);border-color:var(--danger)">
+                <i class="fas fa-trash"></i> ${t('cart_remove')}
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="cart-layout">
+          <div class="cart-items">
+            ${itemsHtml}
+          </div>
+          <div class="cart-summary">
+            <h3><i class="fas fa-receipt"></i> ${t('cart_total')}</h3>
+            <div class="cart-summary-row">
+              <span>${t('cart_item_count')}</span>
+              <span>${cart.getCount()} ${t('cart_item_count')}</span>
+            </div>
+            <div class="cart-summary-row">
+              <span>${t('cart_subtotal')}</span>
+              <span>${cart.formatPrice(cart.getSubtotal())}</span>
+            </div>
+            <div class="cart-summary-total">
+              <span>${t('cart_total')}</span>
+              <span>${cart.formatPrice(cart.getTotal())}</span>
+            </div>
+            <a href="checkout.html" class="btn btn-accent btn-full btn-lg">
+              <i class="fas fa-credit-card"></i> ${t('cart_checkout')}
+            </a>
+            <div style="margin-top:.75rem;text-align:center">
+              <a href="products.html" class="btn btn-outline btn-sm btn-full"><i class="fas fa-arrow-left"></i> ${t('cart_continue')}</a>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function updateQty(id, qty) {
+      cart.updateQuantity(id, qty);
+      renderCart();
+      renderNav();
+    }
+
+    function removeItem(id) {
+      cart.removeItem(id);
+      renderCart();
+      renderNav();
+      showToast(t('cart_remove') + ' ✓');
+    }
+  </script>
+</body>
+</html>

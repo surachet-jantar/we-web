@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container container-sm">
+      <div class="section-header">
+        <h2 id="page-title">โปรไฟล์</h2>
+      </div>
+      <div id="profile-content">
+        <div class="loading"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      document.getElementById('page-title').textContent = t('profile_title');
+      if (!requireLogin()) return;
+      renderProfile();
+    });
+
+    function renderProfile() {
+      const user = auth.getUser();
+      if (!user) return;
+      const initial = (user.Name || user.Email || '?')[0].toUpperCase();
+      const roleBadge = user.Role === 'admin'
+        ? '<span class="badge badge-admin">ADMIN</span>'
+        : '<span class="badge badge-user">USER</span>';
+
+      document.getElementById('profile-content').innerHTML = `
+        <div class="profile-card">
+          <div class="profile-avatar">${initial}</div>
+          <div class="profile-info">
+            <h3>${user.Name || '—'} ${roleBadge}</h3>
+            <p><i class="fas fa-envelope"></i> ${user.Email || '—'}</p>
+            <p><i class="fas fa-phone"></i> ${user.Phone || '—'}</p>
+            <p style="font-size:.78rem;color:var(--text-muted)"><i class="fas fa-calendar"></i> ${(user.CreatedAt || '').split('T')[0]}</p>
+          </div>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div class="admin-form" style="margin-bottom:1.5rem">
+          <h3 style="margin-bottom:1rem"><i class="fas fa-pen"></i> ${t('profile_update')}</h3>
+          <form onsubmit="updateProfile(event)">
+            <div class="form-group">
+              <label>${t('register_name')}</label>
+              <input type="text" id="p-name" value="${user.Name || ''}">
+            </div>
+            <div class="form-group">
+              <label>${t('register_phone')}</label>
+              <input type="tel" id="p-phone" value="${user.Phone || ''}">
+            </div>
+            <div class="form-group">
+              <label>${t('login_email')}</label>
+              <input type="email" value="${user.Email || ''}" disabled style="opacity:.6">
+              <small style="color:var(--text-muted)">${getLang()==='th'?'ไม่สามารถเปลี่ยนอีเมลได้':'Email cannot be changed'}</small>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> ${t('save')}</button>
+          </form>
+        </div>
+
+        <!-- Change Password -->
+        <div class="admin-form" style="margin-bottom:1.5rem">
+          <h3 style="margin-bottom:1rem"><i class="fas fa-lock"></i> ${getLang()==='th'?'เปลี่ยนรหัสผ่าน':'Change Password'}</h3>
+          <form onsubmit="changePassword(event)">
+            <div class="form-group">
+              <label>${getLang()==='th'?'รหัสผ่านเดิม':'Current Password'}</label>
+              <input type="password" id="p-old-pw" required>
+            </div>
+            <div class="form-group">
+              <label>${getLang()==='th'?'รหัสผ่านใหม่':'New Password'}</label>
+              <input type="password" id="p-new-pw" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label>${t('register_confirm_password')}</label>
+              <input type="password" id="p-confirm-pw" required minlength="6">
+            </div>
+            <button type="submit" class="btn btn-outline"><i class="fas fa-key"></i> ${t('save')}</button>
+          </form>
+        </div>
+
+        <!-- Quick Links -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+          <a href="orders.html" class="btn btn-primary"><i class="fas fa-box"></i> ${t('nav_orders')}</a>
+          ${user.Role === 'admin' ? '<a href="admin/index.html" class="btn btn-accent"><i class="fas fa-cog"></i> ' + t('nav_admin') + '</a>' : ''}
+        </div>`;
+    }
+
+    async function updateProfile(e) {
+      e.preventDefault();
+      const user = auth.getUser();
+      const name = document.getElementById('p-name').value.trim();
+      const phone = document.getElementById('p-phone').value.trim();
+      if (!name) { showToast('Name required'); return; }
+      try {
+        await api.updateUser(user.ID, { Name: name, Phone: phone });
+        auth.updateLocal({ Name: name, Phone: phone });
+        showToast(t('save') + ' ✓');
+        renderProfile();
+      } catch (err) { showToast(t('error')); }
+    }
+
+    async function changePassword(e) {
+      e.preventDefault();
+      const user = auth.getUser();
+      const oldPw = document.getElementById('p-old-pw').value;
+      const newPw = document.getElementById('p-new-pw').value;
+      const confirmPw = document.getElementById('p-confirm-pw').value;
+      if (newPw !== confirmPw) { showToast(getLang()==='th'?'รหัสผ่านไม่ตรงกัน':'Passwords do not match'); return; }
+      try {
+        const oldHash = await auth.hashPassword(oldPw);
+        if (oldHash !== user.Password) { showToast(t('login_error')); return; }
+        const newHash = await auth.hashPassword(newPw);
+        await api.updateUser(user.ID, { Password: newHash });
+        auth.updateLocal({ Password: newHash });
+        showToast(t('save') + ' ✓');
+        document.getElementById('p-old-pw').value = '';
+        document.getElementById('p-new-pw').value = '';
+        document.getElementById('p-confirm-pw').value = '';
+      } catch (err) { showToast(t('error')); }
+    }
+  </script>
+</body>
+</html>

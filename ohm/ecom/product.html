@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <a href="products.html" class="btn btn-outline btn-sm" style="margin-bottom:1.5rem" id="back-link">
+        <i class="fas fa-arrow-left"></i> <span></span>
+      </a>
+      <div id="product-content">
+        <div class="loading"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    let currentProduct = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      renderNav();
+      renderFooter();
+      document.getElementById('back-link').querySelector('span').textContent = t('all_products_title');
+
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) { showNotFound(); return; }
+
+      try {
+        const product = await api.getProductById(id);
+        if (!product) { showNotFound(); return; }
+        currentProduct = product;
+        document.title = getField(product, 'Name') + ' — LCG SHOP';
+        renderProductDetail(product);
+      } catch (e) {
+        showNotFound();
+      }
+    });
+
+    function showNotFound() {
+      document.getElementById('product-content').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <p>${t('product_not_found')}</p>
+          <a href="products.html" class="btn btn-primary">${t('all_products_title')}</a>
+        </div>`;
+    }
+
+    function renderProductDetail(p) {
+      const name = getField(p, 'Name');
+      const desc = getField(p, 'Description');
+      const images = (p.ImageURLs && p.ImageURLs.length > 0) ? p.ImageURLs : ['https://via.placeholder.com/400x300/e2e8f0/64748b?text=Projector'];
+      const hasSale = p.SalePrice && Number(p.SalePrice) > 0 && Number(p.SalePrice) < Number(p.RegularPrice);
+      const outOfStock = Number(p.Stock) <= 0;
+
+      let stockBadge = outOfStock
+        ? `<div class="product-stock out-stock"><i class="fas fa-times-circle"></i> ${t('product_out_stock')}</div>`
+        : `<div class="product-stock in-stock"><i class="fas fa-check-circle"></i> ${t('product_in_stock')} (${p.Stock})</div>`;
+
+      const specs = [
+        [t('product_brand'), p.Brand],
+        [t('product_resolution'), p.Resolution],
+        [t('product_lumens'), p.Lumens ? p.Lumens + ' lm' : null],
+        [t('product_throw'), p.ThrowType],
+        [t('product_connectivity'), p.Connectivity],
+        [t('product_contrast'), p.ContrastRatio],
+      ].filter(s => s[1]);
+
+      document.getElementById('product-content').innerHTML = `
+        <div class="product-detail">
+          <div class="product-gallery">
+            <div class="product-gallery-main">
+              <img id="main-image" src="${images[0]}" alt="${name}">
+            </div>
+            ${images.length > 1 ? `
+            <div class="product-gallery-thumbs" id="thumb-container">
+              ${images.map((img, i) => `<img class="product-gallery-thumb ${i === 0 ? 'active' : ''}" src="${img}" alt="thumb ${i + 1}" onclick="swapImage(this, '${img}')">`).join('')}
+            </div>` : ''}
+          </div>
+          <div class="product-info">
+            <div class="product-info-brand">${p.Brand || ''}</div>
+            <h1 class="product-info-name">${name}</h1>
+            <div class="product-info-price">
+              ${hasSale ? '<span class="price-original">' + cart.formatPrice(p.RegularPrice) + '</span>' : ''}
+              <span class="price-current">${cart.formatPrice(hasSale ? p.SalePrice : p.RegularPrice)}</span>
+              ${hasSale ? '<span class="product-card-badge">' + t('product_sale') + '</span>' : ''}
+            </div>
+            ${stockBadge}
+            <button class="btn btn-primary btn-lg" onclick="addToCart('${p.ID}')" id="add-cart-btn" ${outOfStock ? 'disabled' : ''}>
+              <i class="fas fa-cart-plus"></i> ${t('product_add_cart')}
+            </button>
+            <div class="product-specs">
+              <h3><i class="fas fa-list"></i> ${t('product_specs')}</h3>
+              <table class="specs-table">
+                ${specs.map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join('')}
+              </table>
+            </div>
+            ${desc ? `
+            <div class="product-desc">
+              <h3><i class="fas fa-info-circle"></i> ${t('product_description')}</h3>
+              <p>${desc}</p>
+            </div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    function swapImage(thumb, src) {
+      document.getElementById('main-image').src = src;
+      document.querySelectorAll('.product-gallery-thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+    }
+
+    async function addToCart(id) {
+      if (!auth.isLoggedIn()) { showToast(t('login_title') + '...'); setTimeout(() => location.href = 'auth.html', 500); return; }
+      const p = await api.getProductById(id);
+      if (p) { cart.addItem(id, p, 1); showToast(t('product_add_cart') + ' ✓'); }
+    }
+  </script>
+</body>
+</html>

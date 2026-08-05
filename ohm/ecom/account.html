@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1.5rem}
+    .tabs button{padding:.75rem 1.5rem;background:none;border:none;border-bottom:3px solid transparent;font-size:.95rem;font-weight:600;color:var(--text-muted);cursor:pointer;transition:var(--transition);font-family:var(--font);display:flex;align-items:center;gap:.4rem}
+    .tabs button:hover{color:var(--primary)}
+    .tabs button.active{color:var(--primary);border-bottom-color:var(--primary)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container container-sm">
+      <div class="section-header">
+        <h2 id="page-title">My Account</h2>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="active" onclick="switchTab('profile')" id="tab-profile"><i class="fas fa-user"></i> <span>Profile</span></button>
+        <button onclick="switchTab('orders')" id="tab-orders"><i class="fas fa-box"></i> <span>Orders</span></button>
+        <button onclick="switchTab('settings')" id="tab-settings"><i class="fas fa-gear"></i> <span>Settings</span></button>
+      </div>
+
+      <!-- PROFILE TAB -->
+      <div class="tab-panel active" id="panel-profile">
+        <div id="profile-card"></div>
+        <div class="admin-form" style="margin-bottom:1.5rem">
+          <h3 style="margin-bottom:1rem"><i class="fas fa-pen"></i> <span id="edit-profile-label"></span></h3>
+          <form onsubmit="updateProfile(event)">
+            <div class="form-group">
+              <label id="lbl-p-name"></label>
+              <input type="text" id="p-name" required>
+            </div>
+            <div class="form-group">
+              <label id="lbl-p-phone"></label>
+              <input type="tel" id="p-phone">
+            </div>
+            <div class="form-group">
+              <label id="lbl-p-email"></label>
+              <input type="email" id="p-email" disabled style="opacity:.6">
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> <span id="btn-save"></span></button>
+          </form>
+        </div>
+        <div class="admin-form">
+          <h3 style="margin-bottom:1rem"><i class="fas fa-lock"></i> <span id="change-pw-label"></span></h3>
+          <form onsubmit="changePassword(event)">
+            <div class="form-group">
+              <label id="lbl-old-pw"></label>
+              <input type="password" id="p-old-pw" required>
+            </div>
+            <div class="form-group">
+              <label id="lbl-new-pw"></label>
+              <input type="password" id="p-new-pw" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label id="lbl-confirm-pw"></label>
+              <input type="password" id="p-confirm-pw" required minlength="6">
+            </div>
+            <button type="submit" class="btn btn-outline"><i class="fas fa-key"></i> <span id="btn-change-pw"></span></button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ORDERS TAB -->
+      <div class="tab-panel" id="panel-orders">
+        <div id="orders-content"><div class="loading"></div></div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div class="tab-panel" id="panel-settings">
+        <div class="admin-form" style="margin-bottom:1.5rem">
+          <h3 style="margin-bottom:1rem"><i class="fas fa-store"></i> <span id="settings-label"></span></h3>
+          <form onsubmit="event.preventDefault(); localStorage.setItem('lcg_lang', document.getElementById('s-lang').value); showToast(t('save')+' ✓');">
+            <div class="form-group">
+              <label id="lbl-s-lang"></label>
+              <select id="s-lang">
+                <option value="th">🇹🇭 ไทย</option>
+                <option value="en">🇬🇧 English</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> <span id="btn-save2"></span></button>
+          </form>
+        </div>
+        <div class="admin-form">
+          <h3 style="margin-bottom:1rem"><i class="fas fa-info-circle"></i> <span id="info-label"></span></h3>
+          <table class="specs-table" style="max-width:400px">
+            <tr><td><strong>App</strong></td><td>LCG SHOP</td></tr>
+            <tr><td><strong>Version</strong></td><td>1.0.0</td></tr>
+            <tr><td><strong>Backend</strong></td><td>Google Apps Script</td></tr>
+            <tr><td><strong>Database</strong></td><td>Google Sheets</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    let activeTab = 'profile';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      if (!requireLogin()) return;
+      applyLang();
+      loadProfile();
+      // Check hash for tab
+      const hash = window.location.hash.replace('#', '');
+      if (['profile','orders','settings'].includes(hash)) switchTab(hash);
+    });
+
+    function applyLang() {
+      const L = getLang();
+      document.getElementById('page-title').textContent = t('profile_title');
+      document.getElementById('tab-profile').querySelector('span').textContent = t('nav_profile');
+      document.getElementById('tab-orders').querySelector('span').textContent = t('nav_orders');
+      document.getElementById('tab-settings').querySelector('span').textContent = t('nav_settings');
+      document.getElementById('edit-profile-label').textContent = t('profile_update');
+      document.getElementById('lbl-p-name').textContent = t('register_name');
+      document.getElementById('lbl-p-phone').textContent = t('register_phone');
+      document.getElementById('lbl-p-email').textContent = t('login_email');
+      document.getElementById('btn-save').textContent = t('save');
+      document.getElementById('change-pw-label').textContent = L === 'th' ? 'เปลี่ยนรหัสผ่าน' : 'Change Password';
+      document.getElementById('lbl-old-pw').textContent = L === 'th' ? 'รหัสผ่านเดิม' : 'Current Password';
+      document.getElementById('lbl-new-pw').textContent = L === 'th' ? 'รหัสผ่านใหม่' : 'New Password';
+      document.getElementById('lbl-confirm-pw').textContent = t('register_confirm_password');
+      document.getElementById('btn-change-pw').textContent = t('save');
+      document.getElementById('settings-label').textContent = t('nav_settings');
+      document.getElementById('lbl-s-lang').textContent = t('store_settings_default_lang');
+      document.getElementById('btn-save2').textContent = t('save');
+      document.getElementById('info-label').textContent = t('store_settings_app_info');
+      document.getElementById('s-lang').value = L;
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+      window.location.hash = tab;
+      if (tab === 'orders') loadOrders();
+    }
+
+    function loadProfile() {
+      const user = auth.getUser();
+      if (!user) return;
+      const initial = (user.Name || user.Email || '?')[0].toUpperCase();
+      const roleBadge = user.Role === 'admin'
+        ? '<span class="badge badge-admin">ADMIN</span>'
+        : '<span class="badge badge-user">USER</span>';
+
+      document.getElementById('profile-card').innerHTML = `
+        <div class="profile-card">
+          <div class="profile-avatar">${initial}</div>
+          <div class="profile-info">
+            <h3>${user.Name || '—'} ${roleBadge}</h3>
+            <p><i class="fas fa-envelope"></i> ${user.Email || '—'}</p>
+            <p><i class="fas fa-phone"></i> ${user.Phone || '—'}</p>
+            <p style="font-size:.78rem;color:var(--text-muted)"><i class="fas fa-calendar"></i> ${(user.CreatedAt || '').split('T')[0]}</p>
+          </div>
+        </div>
+        ${user.Role === 'admin' ? '<div style="margin-bottom:1rem"><a href="admin/index.html" class="btn btn-accent"><i class="fas fa-cog"></i> ' + t('nav_admin') + '</a></div>' : ''}`;
+
+      document.getElementById('p-name').value = user.Name || '';
+      document.getElementById('p-phone').value = user.Phone || '';
+      document.getElementById('p-email').value = user.Email || '';
+    }
+
+    async function updateProfile(e) {
+      e.preventDefault();
+      const user = auth.getUser();
+      const name = document.getElementById('p-name').value.trim();
+      const phone = document.getElementById('p-phone').value.trim();
+      if (!name) { showToast('Name required'); return; }
+      try {
+        await api.updateUser(user.ID, { Name: name, Phone: phone });
+        auth.updateLocal({ Name: name, Phone: phone });
+        showToast(t('save') + ' ✓');
+        loadProfile();
+        renderNav();
+      } catch (err) { showToast(t('error')); }
+    }
+
+    async function changePassword(e) {
+      e.preventDefault();
+      const user = auth.getUser();
+      const oldPw = document.getElementById('p-old-pw').value;
+      const newPw = document.getElementById('p-new-pw').value;
+      const confirmPw = document.getElementById('p-confirm-pw').value;
+      if (newPw !== confirmPw) { showToast(getLang() === 'th' ? 'รหัสผ่านไม่ตรงกัน' : 'Passwords do not match'); return; }
+      try {
+        const oldHash = await auth.hashPassword(oldPw);
+        if (oldHash !== user.Password) { showToast(t('login_error')); return; }
+        const newHash = await auth.hashPassword(newPw);
+        await api.updateUser(user.ID, { Password: newHash });
+        auth.updateLocal({ Password: newHash });
+        showToast(t('save') + ' ✓');
+        document.getElementById('p-old-pw').value = '';
+        document.getElementById('p-new-pw').value = '';
+        document.getElementById('p-confirm-pw').value = '';
+      } catch (err) { showToast(t('error')); }
+    }
+
+    async function loadOrders() {
+      try {
+        const user = auth.getUser();
+        const orders = await api.getOrdersByUser(user.ID);
+        const container = document.getElementById('orders-content');
+
+        if (orders.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📦</div>
+              <p>${t('order_empty')}</p>
+              <a href="products.html" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> ${t('cart_continue')}</a>
+            </div>`;
+          return;
+        }
+
+        orders.sort((a, b) => (b.CreatedAt || '').localeCompare(a.CreatedAt || ''));
+        container.innerHTML = `<div class="orders-list">
+          ${orders.map(o => {
+            const statusClass = 'badge-' + (o.Status || 'pending');
+            const statusText = t('status_' + (o.Status || 'pending'));
+            return `
+              <div class="order-card">
+                <div class="order-card-header">
+                  <strong>${t('order_id')}: ${o.ID}</strong>
+                  <span class="badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="order-card-body">
+                  <p><strong>${t('order_date')}:</strong> ${(o.CreatedAt || '').replace('T', ' ').substring(0, 19)}</p>
+                  <p><strong>${t('order_total')}:</strong> <span style="color:var(--danger);font-weight:700">${cart.formatPrice(o.TotalPrice)}</span></p>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>`;
+      } catch (e) {
+        document.getElementById('orders-content').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>' + t('error') + '</p></div>';
+      }
+    }
+  </script>
+</body>
+</html>

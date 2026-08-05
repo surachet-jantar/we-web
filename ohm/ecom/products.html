@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Products — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="page-title">สินค้าทั้งหมด</h2>
+      </div>
+
+      <div class="products-layout">
+        <!-- Sidebar Filters -->
+        <aside class="products-sidebar" id="sidebar">
+          <div class="filter-group">
+            <label for="filter-brand"><i class="fas fa-tag"></i> <span id="lbl-brand">แบรนด์</span></label>
+            <select id="filter-brand" onchange="applyFilters()">
+              <option value="all" id="opt-all-brand">ทั้งหมด</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-resolution"><i class="fas fa-tv"></i> <span id="lbl-res">ความละเอียด</span></label>
+            <select id="filter-resolution" onchange="applyFilters()">
+              <option value="all" id="opt-all-res">ทั้งหมด</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-throw"><i class="fas fa-arrows-left-right"></i> <span id="lbl-throw">ระยะฉาย</span></label>
+            <select id="filter-throw" onchange="applyFilters()">
+              <option value="all" id="opt-all-throw">ทั้งหมด</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label><span id="lbl-sort">เรียงตาม</span></label>
+            <select id="filter-sort" onchange="applyFilters()">
+              <option value="newest" id="opt-newest">ใหม่ล่าสุด</option>
+              <option value="price-low" id="opt-price-low">ราคาต่ำ→สูง</option>
+              <option value="price-high" id="opt-price-high">ราคาสูง→ต่ำ</option>
+              <option value="name" id="opt-name">ชื่อ A-Z</option>
+            </select>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="products-main">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-input" placeholder="ค้นหาสินค้า..." oninput="applyFilters()">
+          </div>
+          <p class="products-count" id="products-count"></p>
+          <div class="product-grid" id="products-grid">
+            <div class="loading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    let allProducts = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      renderNav();
+      renderFooter();
+      document.getElementById('page-title').textContent = t('all_products_title');
+      document.getElementById('lbl-brand').textContent = t('filter_brand');
+      document.getElementById('lbl-res').textContent = t('filter_resolution');
+      document.getElementById('lbl-throw').textContent = t('filter_throw');
+      document.getElementById('lbl-sort').textContent = t('filter_sort');
+      document.getElementById('opt-all-brand').textContent = t('filter_all');
+      document.getElementById('opt-all-res').textContent = t('filter_all');
+      document.getElementById('opt-all-throw').textContent = t('filter_all');
+      document.getElementById('opt-newest').textContent = t('sort_newest');
+      document.getElementById('opt-price-low').textContent = t('sort_price_low');
+      document.getElementById('opt-price-high').textContent = t('sort_price_high');
+      document.getElementById('opt-name').textContent = t('sort_name');
+      document.getElementById('search-input').placeholder = t('search');
+
+      try {
+        allProducts = await api.getProducts();
+        populateFilters(allProducts);
+        applyFilters();
+      } catch (e) {
+        document.getElementById('products-grid').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><p>' + t('error') + '</p></div>';
+      }
+    });
+
+    function populateFilters(products) {
+      const brands = [...new Set(products.map(p => p.Brand).filter(Boolean))].sort();
+      const resolutions = [...new Set(products.map(p => p.Resolution).filter(Boolean))].sort();
+      const throwTypes = [...new Set(products.map(p => p.ThrowType).filter(Boolean))].sort();
+
+      const brandSel = document.getElementById('filter-brand');
+      brands.forEach(b => { const o = document.createElement('option'); o.value = b; o.textContent = b; brandSel.appendChild(o); });
+
+      const resSel = document.getElementById('filter-resolution');
+      resolutions.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; resSel.appendChild(o); });
+
+      const throwSel = document.getElementById('filter-throw');
+      throwTypes.forEach(th => { const o = document.createElement('option'); o.value = th; o.textContent = th; throwSel.appendChild(o); });
+    }
+
+    function applyFilters() {
+      let filtered = [...allProducts];
+      const brand = document.getElementById('filter-brand').value;
+      const resolution = document.getElementById('filter-resolution').value;
+      const throwType = document.getElementById('filter-throw').value;
+      const sort = document.getElementById('filter-sort').value;
+      const search = document.getElementById('search-input').value.toLowerCase().trim();
+
+      if (brand !== 'all') filtered = filtered.filter(p => p.Brand === brand);
+      if (resolution !== 'all') filtered = filtered.filter(p => p.Resolution === resolution);
+      if (throwType !== 'all') filtered = filtered.filter(p => p.ThrowType === throwType);
+      if (search) filtered = filtered.filter(p => {
+        const name = getField(p, 'Name').toLowerCase();
+        return name.includes(search) || (p.Brand || '').toLowerCase().includes(search);
+      });
+
+      switch (sort) {
+        case 'price-low': filtered.sort((a, b) => Number(a.RegularPrice) - Number(b.RegularPrice)); break;
+        case 'price-high': filtered.sort((a, b) => Number(b.RegularPrice) - Number(a.RegularPrice)); break;
+        case 'name': filtered.sort((a, b) => getField(a, 'Name').localeCompare(getField(b, 'Name'))); break;
+        default: filtered.sort((a, b) => (b.CreatedAt || '').localeCompare(a.CreatedAt || ''));
+      }
+
+      document.getElementById('products-count').textContent = filtered.length + ' ' + t('cart_item_count');
+      renderProducts(filtered);
+    }
+
+    function renderProducts(products) {
+      const grid = document.getElementById('products-grid');
+      if (products.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>' + t('no_results') + '</p></div>';
+        return;
+      }
+      grid.innerHTML = products.map(p => {
+        const name = getField(p, 'Name');
+        const img = (p.ImageURLs && p.ImageURLs[0]) || 'https://via.placeholder.com/400x300/e2e8f0/64748b?text=Projector';
+        const hasSale = p.SalePrice && Number(p.SalePrice) > 0 && Number(p.SalePrice) < Number(p.RegularPrice);
+        const outOfStock = Number(p.Stock) <= 0;
+        let badge = '';
+        if (outOfStock) badge = '<span class="product-card-badge product-card-badge-out">' + t('product_out_stock') + '</span>';
+        else if (hasSale) badge = '<span class="product-card-badge">' + t('product_sale') + '</span>';
+
+        return `
+          <div class="product-card" onclick="location.href='product.html?id=${p.ID}'">
+            <div class="product-card-image">
+              <img src="${img}" alt="${name}" loading="lazy">
+              ${badge}
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-brand">${p.Brand || ''}</div>
+              <div class="product-card-name">${name}</div>
+              <div class="product-card-specs">
+                ${p.Resolution ? '<span>' + p.Resolution + '</span>' : ''}
+                ${p.ThrowType ? '<span>' + p.ThrowType + '</span>' : ''}
+              </div>
+              <div class="product-card-price">
+                ${hasSale ? '<span class="price-original">' + cart.formatPrice(p.RegularPrice) + '</span>' : ''}
+                <span class="price-current">${cart.formatPrice(hasSale ? p.SalePrice : p.RegularPrice)}</span>
+              </div>
+              <div class="product-card-btn">
+                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();addToCart('${p.ID}')" ${outOfStock ? 'disabled' : ''}>
+                  <i class="fas fa-cart-plus"></i> ${t('product_add_cart')}
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    async function addToCart(id) {
+      if (!auth.isLoggedIn()) { showToast(t('login_title') + '...'); setTimeout(() => location.href = 'auth.html', 500); return; }
+      const p = await api.getProductById(id);
+      if (p) { cart.addItem(id, p, 1); showToast(t('product_add_cart') + ' ✓'); }
+    }
+  </script>
+</body>
+</html>

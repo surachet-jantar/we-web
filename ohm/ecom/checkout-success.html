@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Success — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="success-page" id="success-content"></div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      const orderId = new URLSearchParams(window.location.search).get('id');
+      document.getElementById('success-content').innerHTML = `
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h2>${t('checkout_success')}</h2>
+        <p>${t('checkout_success_msg')}</p>
+        ${orderId ? `<div class="success-order-id"><strong>${t('checkout_order_id')}:</strong> ${orderId}</div>` : ''}
+        <div style="margin-top:1.5rem">
+          <a href="index.html" class="btn btn-primary btn-lg"><i class="fas fa-home"></i> ${t('checkout_back_home')}</a>
+        </div>`;
+    });
+  </script>
+</body>
+</html>

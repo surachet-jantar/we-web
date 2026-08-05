@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Products — LCG SHOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="navbar" id="main-nav"></nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="admin-layout">
+        <aside class="admin-sidebar">
+          <div class="admin-sidebar-title"><i class="fas fa-cog"></i></div>
+          <nav class="admin-sidebar-nav">
+            <a href="index.html"><i class="fas fa-chart-pie"></i></a>
+            <a href="products.html" class="active"><i class="fas fa-box"></i></a>
+            <a href="orders.html"><i class="fas fa-receipt"></i></a>
+            <a href="users.html"><i class="fas fa-users"></i></a>
+          </nav>
+        </aside>
+        <div class="admin-main">
+          <div class="admin-header">
+            <h2 id="admin-page-title"></h2>
+            <a href="product-form.html" class="btn btn-primary" id="add-btn"><i class="fas fa-plus"></i></a>
+          </div>
+          <div class="admin-table-wrapper" id="products-table-wrapper">
+            <div class="loading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="main-footer"></footer>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script src="../js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNav();
+      renderFooter();
+      if (!requireAdmin()) return;
+
+      // Render sidebar with translations
+      document.querySelector('.admin-sidebar-title').innerHTML = '<i class="fas fa-cog"></i> ' + t('admin_title');
+      const navLinks = document.querySelectorAll('.admin-sidebar-nav a');
+      const keys = ['admin_dashboard', 'admin_products', 'admin_orders', 'admin_users'];
+      navLinks.forEach((a, i) => { a.innerHTML = a.querySelector('i').outerHTML + ' ' + t(keys[i]); });
+      document.getElementById('admin-page-title').textContent = t('admin_products');
+      document.getElementById('add-btn').innerHTML = '<i class="fas fa-plus"></i> ' + t('admin_add_product');
+
+      loadProducts();
+    });
+
+    async function loadProducts() {
+      try {
+        const products = await api.getProducts();
+        const wrapper = document.getElementById('products-table-wrapper');
+
+        if (products.length === 0) {
+          wrapper.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><p>' + t('no_results') + '</p></div>';
+          return;
+        }
+
+        wrapper.innerHTML = `
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>${t('product_brand')}</th>
+                <th>${t('nav_products')}</th>
+                <th>${t('product_resolution')}</th>
+                <th>${t('product_throw')}</th>
+                <th>Price</th>
+                <th>${t('product_stock')}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${products.map(p => `
+                <tr>
+                  <td style="font-size:.75rem;color:var(--text-muted)">${p.ID}</td>
+                  <td><strong>${p.Brand || ''}</strong></td>
+                  <td>${getField(p, 'Name')}</td>
+                  <td>${p.Resolution || ''}</td>
+                  <td>${p.ThrowType || ''}</td>
+                  <td style="font-weight:700;color:var(--danger)">${cart.formatPrice(p.RegularPrice)}</td>
+                  <td>${p.Stock || 0}</td>
+                  <td>
+                    <a href="product-form.html?id=${p.ID}" class="btn btn-sm btn-outline" title="${t('edit')}"><i class="fas fa-pen"></i></a>
+                    <button class="btn btn-sm btn-danger" title="${t('delete')}" onclick="deleteProduct('${p.ID}')"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
+      } catch (e) {
+        document.getElementById('products-table-wrapper').innerHTML = '<div class="empty-state"><p>' + t('error') + '</p></div>';
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm(t('admin_confirm_delete'))) return;
+      try {
+        await api.deleteProduct(id);
+        showToast(t('delete') + ' ✓');
+        loadProducts();
+      } catch (e) {
+        showToast(t('error'));
+      }
+    }
+  </script>
+</body>
+</html>
