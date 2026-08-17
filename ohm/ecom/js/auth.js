@@ -13,7 +13,7 @@ function _sha256(str){
   const enc=new TextEncoder();
   const data=enc.encode(str);
   const len=data.length, bitLen=len*8;
-  const padLen=((56-((len+9)%64))+64)%64;
+  const padLen=(64-((len+9)%64))%64;
   const buf=new ArrayBuffer(len+1+padLen+8);
   const dv=new DataView(buf);
   new Uint8Array(buf).set(data);
