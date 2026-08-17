@@ -250,6 +250,7 @@
                 <div class="order-card-body">
                   <p><strong>${t('order_date')}:</strong> ${(o.CreatedAt || '').replace('T', ' ').substring(0, 19)}</p>
                   <p><strong>${t('order_total')}:</strong> <span style="color:var(--danger);font-weight:700">${cart.formatPrice(o.TotalPrice)}</span></p>
+                  <p><strong>${t('tracking_number')}:</strong> ${o.TrackingNumber ? '<span style="font-weight:700;color:var(--primary)">' + o.TrackingNumber + '</span>' : '<span style="color:var(--text-muted)">' + t('tracking_none') + '</span>'}</p>
                 </div>
               </div>`;
           }).join('')}

@@ -64,7 +64,7 @@ const auth = {
   async register({name,email,password,phone}) {
     const ex=await api.findUserByEmail(email); if(ex)throw new Error(t('register_error'));
     const hp=await this.hashPassword(password);
-    const u={ID:this.generateId(),Name:name,Email,email:email,Password:hp,Phone:phone,Role:'user',CreatedAt:new Date().toISOString()};
+    const u={ID:this.generateId(),Name:name,Email:email,Password:hp,Phone:phone,Role:'user',CreatedAt:new Date().toISOString()};
     await api.addUser(u); return u;
   },
   async login(email,password) {

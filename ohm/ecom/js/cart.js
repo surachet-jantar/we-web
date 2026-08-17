@@ -26,6 +26,6 @@ const cart = {
   buildOrder(user) {
     return {ID:'ORD_'+Date.now()+'_'+Math.random().toString(36).substr(2,6), UserID:user.ID,
       Items:JSON.stringify(this.getItems().map(i=>({productId:i.productId,name:i.name_EN||i.name_TH,quantity:i.quantity,price:i.salePrice>0?i.salePrice:i.regularPrice}))),
-      TotalPrice:this.getTotal(), Name:user.Name||'', Phone:user.Phone||'', Address:'', Status:'pending', CreatedAt:new Date().toISOString()};
+      TotalPrice:this.getTotal(), Name:user.Name||'', Phone:user.Phone||'', Address:'', TrackingNumber:'', Status:'pending', CreatedAt:new Date().toISOString()};
   },
 };
