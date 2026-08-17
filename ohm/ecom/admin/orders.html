@@ -87,15 +87,15 @@
             <tbody>
               ${orders.map(o => `
                 <tr>
-                  <td style="font-size:.75rem;color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis">${o.ID}</td>
+                  <td class="order-id-cell">${o.ID}</td>
                   <td><strong>${o.Name || ''}</strong></td>
                   <td>${o.Phone || ''}</td>
-                  <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${o.Address || ''}">${o.Address || ''}</td>
-                  <td style="font-weight:700;color:var(--danger)">${cart.formatPrice(o.TotalPrice)}</td>
+                  <td class="address-cell" title="${o.Address || ''}">${o.Address || ''}</td>
+                  <td class="price-cell">${cart.formatPrice(o.TotalPrice)}</td>
                   <td>
-                    <div class="tracking-cell" style="display:flex;gap:4px;align-items:center">
-                      <input type="text" class="tracking-input" id="tracking-${o.ID}" value="${o.TrackingNumber||''}" placeholder="${t('tracking_placeholder')}" style="flex:1;min-width:100px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:.8rem">
-                      <button class="btn btn-sm btn-outline" onclick="saveTracking('${o.ID}')" title="${t('tracking_save')}"><i class="fas fa-save"></i></button>
+                    <div class="tracking-cell">
+                      <input type="text" class="tracking-input" id="tracking-${o.ID}" value="${o.TrackingNumber||''}" placeholder="${t('tracking_placeholder')}">
+                      <button class="btn btn-sm btn-outline tracking-btn" onclick="saveTracking('${o.ID}')" title="${t('tracking_save')}"><i class="fas fa-save"></i></button>
                     </div>
                   </td>
                   <td>
@@ -105,7 +105,7 @@
                       <option value="delivered" ${o.Status==='delivered'?'selected':''}>${t('status_delivered')}</option>
                     </select>
                   </td>
-                  <td style="font-size:.8rem">${(o.CreatedAt || '').split('T')[0]}</td>
+                  <td class="date-cell">${(o.CreatedAt || '').split('T')[0]}</td>
                 </tr>`).join('')}
             </tbody>
           </table>`;

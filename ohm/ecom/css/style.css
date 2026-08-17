@@ -288,9 +288,13 @@ button{cursor:pointer;font-family:var(--font)}
 .stat-card-label{font-size:.82rem;color:var(--text-muted);font-weight:500}
 
 .admin-table-wrapper{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);border:1px solid var(--border-light)}
-.admin-table{width:100%;background:var(--surface);font-size:.85rem;border-collapse:collapse}
+.admin-table{width:100%;background:var(--surface);font-size:.85rem;border-collapse:collapse;white-space:nowrap}
 .admin-table th{background:var(--surface-2);font-weight:600;text-align:left;padding:.7rem 1rem;border-bottom:2px solid var(--border);white-space:nowrap;color:var(--text-secondary);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
 .admin-table td{padding:.7rem 1rem;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.admin-table td.order-id-cell{font-size:.75rem;color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-table td.address-cell{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-table td.price-cell{font-weight:700;color:var(--danger);white-space:nowrap}
+.admin-table td.date-cell{font-size:.8rem;white-space:nowrap}
 .admin-table tr:hover td{background:var(--primary-bg)}
 
 .admin-form{background:var(--surface);border-radius:var(--radius-lg);padding:1.75rem;box-shadow:var(--shadow-sm);border:1px solid var(--border-light)}
@@ -307,6 +311,15 @@ button{cursor:pointer;font-family:var(--font)}
 .badge-delivered{background:var(--success-bg);color:#15803d}
 .status-select{padding:.35rem .6rem;border-radius:var(--radius-md);font-size:.8rem;border:1.5px solid var(--border);font-family:var(--font);transition:var(--transition)}
 .status-select:focus{outline:none;border-color:var(--primary)}
+
+/* Tracking Number */
+.tracking-cell{display:flex;flex-wrap:nowrap;gap:4px;align-items:center}
+.tracking-input{flex:1;min-width:0;width:120px;padding:5px 8px;border:1.5px solid var(--border);border-radius:var(--radius-md);font-size:.78rem;font-family:var(--font);transition:var(--transition);background:var(--surface)}
+.tracking-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.tracking-input::placeholder{color:var(--text-muted)}
+.tracking-btn{padding:5px 8px!important;font-size:.75rem!important;flex-shrink:0}
+.tracking-saved{font-size:.7rem;color:var(--success);font-weight:600;display:flex;align-items:center;gap:3px}
+.tracking-none{color:var(--text-muted);font-size:.82rem;font-style:italic}
 
 /* ============================================================
    PROFILE & ORDERS
@@ -378,6 +391,10 @@ button{cursor:pointer;font-family:var(--font)}
   .admin-sidebar-title{display:none}
   .admin-sidebar-nav{flex-direction:row}
   .admin-stats{grid-template-columns:repeat(2,1fr)}
+  .admin-table{font-size:.78rem}
+  .admin-table th,.admin-table td{padding:.5rem .6rem}
+  .tracking-input{width:100px;font-size:.72rem;padding:4px 6px}
+  .tracking-btn{padding:4px 6px!important}
   .cart-item{flex-wrap:wrap}
   .profile-card{flex-direction:column;text-align:center}
   .why-us-grid{grid-template-columns:repeat(2,1fr)}
