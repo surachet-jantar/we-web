@@ -1,0 +1,64 @@
+/* ตกแต่งการ์ดอาหารให้มีความนูนและมีเอฟเฟกต์เมื่อเอาเมาส์ชี้ */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 16px;
+    background-color: #ffffff;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+
+/* จัดขนาดรูปอาหารให้เท่ากัน เต็มกรอบสวยงามแบบ Cover (ไม่มีขอบขาว) */
+.product-img {
+    height: 220px;
+    object-fit: cover; /* เปลี่ยนจาก contain เป็น cover รูปอาหารจะดูน่ากินกว่ามาก */
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+/* ป้ายสถานะ (Badge) บนรูปสินค้า */
+.badge-custom {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 10;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* สีเฉพาะสำหรับป้ายราคาและปุ่ม เพื่อให้เข้าตีมอาหาร */
+.btn-warning {
+    background-color: #f39c12;
+    border-color: #e67e22;
+    color: #fff !important;
+}
+
+.btn-warning:hover {
+    background-color: #e67e22;
+    border-color: #d35400;
+}
+
+/* โลโก้ใน Header */
+.header-logo {
+    transition: transform 0.2s ease;
+}
+.navbar-brand:hover .header-logo {
+    transform: rotate(-6deg) scale(1.05);
+}
+
+/* แถบกรองเมนู */
+#menu-filter-bar {
+    border-radius: 16px;
+    background: #fff;
+}
+#menu-filter-bar .form-control:focus,
+#menu-filter-bar .form-select:focus {
+    border-color: #f39c12;
+    box-shadow: 0 0 0 0.2rem rgba(243,156,18,0.15);
+}
+#menu-filter-count {
+    font-weight: 600;
+}

@@ -1,0 +1,39 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies (if you add a build step later)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Build / dist
+dist/
+build/
+out/
+.cache/
+.parcel-cache/
+
+# Temp
+*.tmp
+*.temp
