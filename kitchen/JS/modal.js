@@ -40,15 +40,48 @@ function generateModalOptions(name, category, product) {
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_level" value="เผ็ดมาก" data-price="0" id="s-hot"><label class="form-check-label" for="s-hot">เผ็ดมาก</label></div>
         `;
     } else if (category === 'ทอด') {
-        choicesHtml = `
+        // ของทอด = รวม ไก่ทอดกระเทียม + ไก่ทอดหาดใหญ่ + หมูทอดกระเทียม
+        if (name === 'ของทอด') {
+            choicesHtml = `
+            <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🍗 เลือกเนื้อ</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="fried_meat" value="ไก่" data-price="0" id="fm-chicken" checked><label class="form-check-label" for="fm-chicken">ไก่ (ปกติ)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="fried_meat" value="หมู" data-price="0" id="fm-pork"><label class="form-check-label" for="fm-pork">หมู (ปกติ)</label></div>
+            <h6 class="fw-bold border-bottom pb-2 mt-3">✨ เลือกสไตล์</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="fried_style" value="กระเทียม" data-price="0" id="fs-garlic" checked><label class="form-check-label" for="fs-garlic">กระเทียม (ปกติ)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="fried_style" value="หาดใหญ่" data-price="0" id="fs-hatyai"><label class="form-check-label" for="fs-hatyai">หาดใหญ่ หอมเจียว ยี่หร่า</label></div>
+            <h6 class="fw-bold border-bottom pb-2 mt-3">🍗 เลือกน้ำจิ้ม</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="น้ำจิ้มแจ่ว" data-price="0" id="d-jaew" checked><label class="form-check-label" for="d-jaew">น้ำจิ้มแจ่ว (ปกติ)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="ซอสพริก" data-price="0" id="d-chili"><label class="form-check-label" for="d-chili">ซอสพริก</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="มายองเนส" data-price="0" id="d-mayo"><label class="form-check-label" for="d-mayo">มายองเนส</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="น้ำจิ้มไก่" data-price="0" id="d-chicken"><label class="form-check-label" for="d-chicken">น้ำจิ้มไก่</label></div>
+            `;
+        } else {
+            choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🍗 เลือกน้ำจิ้ม</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="น้ำจิ้มแจ่ว" data-price="0" id="d-jaew" checked><label class="form-check-label" for="d-jaew">น้ำจิ้มแจ่ว (ปกติ)</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="ซอสพริก" data-price="0" id="d-chili"><label class="form-check-label" for="d-chili">ซอสพริก</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="มายองเนส" data-price="0" id="d-mayo"><label class="form-check-label" for="d-mayo">มายองเนส</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="dip_choice" value="น้ำจิ้มไก่" data-price="0" id="d-chicken"><label class="form-check-label" for="d-chicken">น้ำจิ้มไก่</label></div>
-        `;
+            `;
+        }
     } else if (category === 'ต้ม') {
-        choicesHtml = `
+        if (name === 'ต้มยำ') {
+            choicesHtml = `
+            <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🍲 เลือกเนื้อ</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="tomyum_meat" value="กุ้ง" data-price="0" id="tm-shrimp" checked><label class="form-check-label" for="tm-shrimp">กุ้ง (ปกติ)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="tomyum_meat" value="ทะเลรวม" data-price="20" id="tm-seafood"><label class="form-check-label" for="tm-seafood">ทะเลรวม กุ้ง+หมึก+หอย (+20)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="tomyum_meat" value="หมูสับ" data-price="0" id="tm-pork"><label class="form-check-label" for="tm-pork">หมูสับ</label></div>
+            <h6 class="fw-bold border-bottom pb-2 mt-3">🍲 เลือกรสชาติ</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="soup_taste" value="น้ำข้น" data-price="0" id="t-thick" checked><label class="form-check-label" for="t-thick">น้ำข้น (ปกติ)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="soup_taste" value="น้ำใส" data-price="0" id="t-clear"><label class="form-check-label" for="t-clear">น้ำใส</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="soup_taste" value="ต้มจืด" data-price="0" id="t-mildsoup"><label class="form-check-label" for="t-mildsoup">ต้มจืด ไม่เผ็ด</label></div>
+            <h6 class="fw-bold text-danger border-bottom pb-2 mt-3">🌶️ ความเผ็ด</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_soup" value="เผ็ดน้อย" data-price="0" id="ss-mild"><label class="form-check-label" for="ss-mild">เผ็ดน้อย</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_soup" value="เผ็ดกลาง" data-price="0" id="ss-mid" checked><label class="form-check-label" for="ss-mid">เผ็ดกลาง</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_soup" value="เผ็ดมาก" data-price="0" id="ss-hot"><label class="form-check-label" for="ss-hot">เผ็ดมาก</label></div>
+            `;
+        } else {
+            choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🍲 เลือกรสชาติ</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="soup_taste" value="ต้มยำน้ำข้น" data-price="0" id="t-thick" checked><label class="form-check-label" for="t-thick">น้ำข้น (ปกติ)</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="soup_taste" value="ต้มยำน้ำใส" data-price="0" id="t-clear"><label class="form-check-label" for="t-clear">น้ำใส</label></div>
@@ -57,7 +90,8 @@ function generateModalOptions(name, category, product) {
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_soup" value="เผ็ดน้อย" data-price="0" id="ss-mild"><label class="form-check-label" for="ss-mild">เผ็ดน้อย</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_soup" value="เผ็ดกลาง" data-price="0" id="ss-mid" checked><label class="form-check-label" for="ss-mid">เผ็ดกลาง</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_soup" value="เผ็ดมาก" data-price="0" id="ss-hot"><label class="form-check-label" for="ss-hot">เผ็ดมาก</label></div>
-        `;
+            `;
+        }
         if (name.includes('คอนซอมเม')) {
             choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🥖 เสิร์ฟพร้อม</h6>
@@ -67,7 +101,22 @@ function generateModalOptions(name, category, product) {
             `;
         }
     } else if (category === 'ยำ') {
-        choicesHtml = `
+        if (name === 'ยำ') {
+            choicesHtml = `
+            <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🥗 เลือกเนื้อ</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="หมูยอ" data-price="0" id="ym-mooyor" checked><label class="form-check-label" for="ym-mooyor">หมูยอ (ปกติ)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="แซลมอน" data-price="60" id="ym-salmon"><label class="form-check-label" for="ym-salmon">แซลมอน (+60)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="ทะเลรวม" data-price="40" id="ym-seafood"><label class="form-check-label" for="ym-seafood">ทะเลรวม (+40)</label></div>
+            <h6 class="fw-bold border-bottom pb-2 mt-3">🥗 เลือกปลาร้า</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="plara_choice" value="ไม่ปลาร้า" data-price="0" id="pl-no" checked><label class="form-check-label" for="pl-no">ไม่ปลาร้า (ปกติ)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="plara_choice" value="ปลาร้า" data-price="0" id="pl-yes"><label class="form-check-label" for="pl-yes">ใส่ปลาร้า</label></div>
+            <h6 class="fw-bold text-danger border-bottom pb-2 mt-3">🌶️ ความเผ็ด</h6>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_spicy" value="เผ็ดน้อย" data-price="0" id="y-mild"><label class="form-check-label" for="y-mild">เผ็ดน้อย</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_spicy" value="เผ็ดกลาง" data-price="0" id="y-mid" checked><label class="form-check-label" for="y-mid">เผ็ดกลาง</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_spicy" value="เผ็ดมาก" data-price="0" id="y-hot"><label class="form-check-label" for="y-hot">เผ็ดมาก</label></div>
+            `;
+        } else {
+            choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🥗 เลือกปลาร้า</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="plara_choice" value="ไม่ปลาร้า" data-price="0" id="pl-no" checked><label class="form-check-label" for="pl-no">ไม่ปลาร้า (ปกติ)</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="plara_choice" value="ปลาร้า" data-price="0" id="pl-yes"><label class="form-check-label" for="pl-yes">ใส่ปลาร้า</label></div>
@@ -75,7 +124,8 @@ function generateModalOptions(name, category, product) {
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_spicy" value="เผ็ดน้อย" data-price="0" id="y-mild"><label class="form-check-label" for="y-mild">เผ็ดน้อย</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_spicy" value="เผ็ดกลาง" data-price="0" id="y-mid" checked><label class="form-check-label" for="y-mid">เผ็ดกลาง</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_spicy" value="เผ็ดมาก" data-price="0" id="y-hot"><label class="form-check-label" for="y-hot">เผ็ดมาก</label></div>
-        `;
+            `;
+        }
     } else if (category === 'ของหวาน') {
         choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🧁 ระดับความหวาน</h6>
