@@ -1,0 +1,6 @@
+user_id,email,username,name,password_hash,role,phone,created_at
+U001,San@admin.com,Admin,Admin San,A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRF,admin,,2026-09-07
+U002,Gaylord@gmail.com,กัสจัง,ระพีภัทรา,x+YWgi82b7G14HVq9JjMEdLAhi7csyym,customer,,2026-09-07
+U003,11@hotmail.com,11,11,0X8l7PvMeFf3vr6kaTCL4LJYCUPpbROj,customer,,2026-09-07
+U004,Fahhh@gmail.com,ฟาคริส,อชิรวุธ,kdKctHAtJnfCGry+7+fXWpyv93YSFqxx,customer,,2026-09-07
+U005,example@gmail.com,Test,นายอธิบดี สุดเจ๋ง,X+zrZv/IbzjZUnhsbWlsecLbwjndTpG0,customer,,2026-09-07

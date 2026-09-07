@@ -1,0 +1,11 @@
+category_id,category_name,category_name_th,description,icon
+CAT01,stir_fry,ผัด,Stir-fried - กะเพรา ผัดซีอิ๊ว คั่วกลิ้ง,🍳
+CAT02,fried,ทอด,Fried - ไก่ทอด หมูทอด ผักทอด เทมปุระ,🍗
+CAT03,soup,ต้ม,Soups - ต้มยำ ต้มจืด คอนซอมเม,🍲
+CAT04,spicy_salad,ยำ,Spicy salads - ยำหมูยอ ยำแซลมอน ยำทะเล ส้มตำ,🥗
+CAT05,rice,ข้าว,Rice dishes - ข้าวผัด ข้าวราด,🍚
+CAT06,noodle,เส้น,Noodle dishes - ผัดไทย ราดหน้า ก๋วยเตี๋ยว,🍜
+CAT07,other,อื่นๆ,Other menus,🍱
+CAT08,dessert,ของหวาน,Desserts - คัพเค้ก กล้วยบวชชี ทาร์ตไข่,🧁
+CAT09,steamed,นึ่ง,Steamed - ซาลาเปา ขนมจีบ เกี๊ยว,🥟
+CAT10,grilled,ปิ้ง/ย่าง,Grilled - เนื้อย่าง หมูปิ้ง ไก่ย่าง,🔥
