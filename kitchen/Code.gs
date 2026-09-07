@@ -21,7 +21,7 @@ const SHEETS = {
 
 const HEADERS = {
   categories: ['category_id','category_name','category_name_th','description','icon'],
-  products: ['product_id','name','price','cost','stock','detail','image_url','category_id','status','is_recommended','created_at','updated_at'],
+  products: ['product_id','name','price','unit','cost','stock','detail','image_url','category_id','status','is_recommended','created_at','updated_at'],
   users: ['user_id','email','username','name','password_hash','role','phone','created_at'],
   orders: ['order_id','user_email','customer_name','phone','address','total','status','payment_status','created_at'],
   order_items: ['order_item_id','order_id','product_id','product_name','unit_price','quantity','options','line_total']
@@ -128,6 +128,8 @@ function doGet(e) {
       Name: p.name,
       price: Number(p.price) || 0,
       Price: Number(p.price) || 0,
+      unit: p.unit || 'ต่อจาน',
+      Unit: p.unit || 'ต่อจาน',
       cost: Number(p.cost) || 0,
       stock: Number(p.stock) || 0,
       Stock: Number(p.stock) || 0,

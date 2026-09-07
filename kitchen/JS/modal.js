@@ -6,7 +6,8 @@ function openOrderModal(productId) {
     let productName = getProductField(currentModalProduct, ['name','Name'], 'เมนู');
     let cat = inferCategory(currentModalProduct);
     document.getElementById('modal-product-name').innerText = productName;
-    document.getElementById('modal-product-price-base').innerText = Number(getProductField(currentModalProduct, ['price','Price'], 0)).toLocaleString();
+    let pUnit = getProductField(currentModalProduct, ['unit','Unit'], 'ต่อจาน');
+    document.getElementById('modal-product-price-base').innerText = Number(getProductField(currentModalProduct, ['price','Price'], 0)).toLocaleString() + ' ' + pUnit;
     let catBadge = document.getElementById('modal-product-category');
     if (catBadge) catBadge.innerText = cat;
     document.getElementById('modal-qty').innerText = currentModalQty;
@@ -31,9 +32,9 @@ function generateModalOptions(name, category, product) {
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🥩 เลือกเนื้อสัตว์</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="หมูสับ" data-price="0" id="c-pork" checked><label class="form-check-label" for="c-pork">หมูสับ (ปกติ)</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="ไก่ชิ้น" data-price="0" id="c-chicken"><label class="form-check-label" for="c-chicken">ไก่ชิ้น (ปกติ)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="หมูกรอบ" data-price="15" id="c-crispypork"><label class="form-check-label" for="c-crispypork">หมูกรอบ (+15)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="ทะเล" data-price="20" id="c-seafood"><label class="form-check-label" for="c-seafood">ทะเล กุ้ง+หมึก (+20)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="รวมมิตร" data-price="25" id="c-mixed"><label class="form-check-label" for="c-mixed">รวมมิตร (+25)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="หมูกรอบ" data-price="10" id="c-crispypork"><label class="form-check-label" for="c-crispypork">หมูกรอบ (+10)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="ทะเล" data-price="15" id="c-seafood"><label class="form-check-label" for="c-seafood">ทะเล กุ้ง+หมึก (+15)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="meat_choice" value="รวมมิตร" data-price="20" id="c-mixed"><label class="form-check-label" for="c-mixed">รวมมิตร (+20)</label></div>
             <h6 class="fw-bold text-danger border-bottom pb-2 mt-3">🌶️ ระดับความเผ็ด</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_level" value="เผ็ดน้อย" data-price="0" id="s-mild"><label class="form-check-label" for="s-mild">เผ็ดน้อย</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="spicy_level" value="เผ็ดกลาง" data-price="0" id="s-mid" checked><label class="form-check-label" for="s-mid">เผ็ดกลาง (ปกติ)</label></div>
@@ -69,7 +70,7 @@ function generateModalOptions(name, category, product) {
             choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🍲 เลือกเนื้อ</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="tomyum_meat" value="กุ้ง" data-price="0" id="tm-shrimp" checked><label class="form-check-label" for="tm-shrimp">กุ้ง (ปกติ)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="tomyum_meat" value="ทะเลรวม" data-price="20" id="tm-seafood"><label class="form-check-label" for="tm-seafood">ทะเลรวม กุ้ง+หมึก+หอย (+20)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="tomyum_meat" value="ทะเลรวม" data-price="15" id="tm-seafood"><label class="form-check-label" for="tm-seafood">ทะเลรวม กุ้ง+หมึก+หอย (+15)</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="tomyum_meat" value="หมูสับ" data-price="0" id="tm-pork"><label class="form-check-label" for="tm-pork">หมูสับ</label></div>
             <h6 class="fw-bold border-bottom pb-2 mt-3">🍲 เลือกรสชาติ</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="soup_taste" value="น้ำข้น" data-price="0" id="t-thick" checked><label class="form-check-label" for="t-thick">น้ำข้น (ปกติ)</label></div>
@@ -105,8 +106,8 @@ function generateModalOptions(name, category, product) {
             choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🥗 เลือกเนื้อ</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="หมูยอ" data-price="0" id="ym-mooyor" checked><label class="form-check-label" for="ym-mooyor">หมูยอ (ปกติ)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="แซลมอน" data-price="60" id="ym-salmon"><label class="form-check-label" for="ym-salmon">แซลมอน (+60)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="ทะเลรวม" data-price="40" id="ym-seafood"><label class="form-check-label" for="ym-seafood">ทะเลรวม (+40)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="แซลมอน" data-price="35" id="ym-salmon"><label class="form-check-label" for="ym-salmon">แซลมอน (+35)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="yum_meat" value="ทะเลรวม" data-price="25" id="ym-seafood"><label class="form-check-label" for="ym-seafood">ทะเลรวม (+25)</label></div>
             <h6 class="fw-bold border-bottom pb-2 mt-3">🥗 เลือกปลาร้า</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="plara_choice" value="ไม่ปลาร้า" data-price="0" id="pl-no" checked><label class="form-check-label" for="pl-no">ไม่ปลาร้า (ปกติ)</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="plara_choice" value="ปลาร้า" data-price="0" id="pl-yes"><label class="form-check-label" for="pl-yes">ใส่ปลาร้า</label></div>
@@ -144,8 +145,8 @@ function generateModalOptions(name, category, product) {
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="steam_dip" value="ซีอิ๊วดำ" data-price="0" id="st-soy"><label class="form-check-label" for="st-soy">ซีอิ๊วดำหวาน</label></div>
             <h6 class="fw-bold border-bottom pb-2 mt-3">📦 จำนวน</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="steam_pack" value="3 ลูก" data-price="0" id="sp-3" checked><label class="form-check-label" for="sp-3">3 ลูก (ปกติ)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="steam_pack" value="6 ลูก" data-price="30" id="sp-6"><label class="form-check-label" for="sp-6">6 ลูก (+30)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="steam_pack" value="12 ลูก" data-price="60" id="sp-12"><label class="form-check-label" for="sp-12">12 ลูก (+60)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="steam_pack" value="6 ลูก" data-price="15" id="sp-6"><label class="form-check-label" for="sp-6">6 ลูก (+15 ต่อ 3 ลูก)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="steam_pack" value="12 ลูก" data-price="30" id="sp-12"><label class="form-check-label" for="sp-12">12 ลูก (+30 ต่อ 9 ลูก)</label></div>
         `;
         if (name.includes('ซาลาเปา')) {
             choicesHtml = `
@@ -171,8 +172,8 @@ function generateModalOptions(name, category, product) {
             choicesHtml = `
             <h6 class="fw-bold text-primary border-bottom pb-2 mt-2">🍢 จำนวนไม้</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="skewer_count" value="3 ไม้" data-price="0" id="sk-3" checked><label class="form-check-label" for="sk-3">3 ไม้ (ปกติ)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="skewer_count" value="5 ไม้" data-price="30" id="sk-5"><label class="form-check-label" for="sk-5">5 ไม้ (+30)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="skewer_count" value="10 ไม้" data-price="75" id="sk-10"><label class="form-check-label" for="sk-10">10 ไม้ (+75)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="skewer_count" value="5 ไม้" data-price="20" id="sk-5"><label class="form-check-label" for="sk-5">5 ไม้ (+20 ต่อ 2 ไม้)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="skewer_count" value="10 ไม้" data-price="45" id="sk-10"><label class="form-check-label" for="sk-10">10 ไม้ (+45 ต่อ 7 ไม้)</label></div>
             <h6 class="fw-bold border-bottom pb-2 mt-3">🥣 น้ำจิ้ม</h6>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="grill_dip2" value="แจ่ว" data-price="0" id="gd2-jaew" checked><label class="form-check-label" for="gd2-jaew">แจ่ว</label></div>
             <div class="form-check mb-2"><input class="form-check-input choice-option" type="radio" name="grill_dip2" value="ซีฟู้ด" data-price="0" id="gd2-seafood"><label class="form-check-label" for="gd2-seafood">ซีฟู้ด</label></div>
@@ -194,7 +195,7 @@ function generateModalOptions(name, category, product) {
     if (category === 'ของหวาน') {
         addonsHtml = `
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มวิปครีม" data-price="10" id="a-whip"><label class="form-check-label" for="a-whip">เพิ่มวิปครีม (+10)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มไอศกรีมวานิลลา" data-price="25" id="a-ice"><label class="form-check-label" for="a-ice">เพิ่มไอศกรีมวานิลลา (+25)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มไอศกรีมวานิลลา" data-price="15" id="a-ice"><label class="form-check-label" for="a-ice">เพิ่มไอศกรีมวานิลลา (+15)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ราดซอสช็อกโกแลต" data-price="10" id="a-choc"><label class="form-check-label" for="a-choc">ราดซอสช็อกโกแลต (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มผลไม้รวม" data-price="15" id="a-fruit"><label class="form-check-label" for="a-fruit">เพิ่มผลไม้รวม (+15)</label></div>
         `;
@@ -206,19 +207,19 @@ function generateModalOptions(name, category, product) {
     } else if (category === 'ปิ้ง/ย่าง') {
         addonsHtml = `
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ข้าวเหนียว" data-price="10" id="a-sticky"><label class="form-check-label" for="a-sticky">ข้าวเหนียว (+10)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ส้มตำไทย" data-price="35" id="a-somtam"><label class="form-check-label" for="a-somtam">ส้มตำไทย (+35)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ส้มตำไทย" data-price="25" id="a-somtam"><label class="form-check-label" for="a-somtam">ส้มตำไทย (+25)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="น้ำจิ้มเพิ่ม" data-price="5" id="a-dipadd"><label class="form-check-label" for="a-dipadd">น้ำจิ้มเพิ่ม (+5)</label></div>
         `;
     } else if (category === 'ต้ม') {
         addonsHtml = `
-            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มเครื่องแน่น" data-price="20" id="a-extra"><label class="form-check-label" for="a-extra">เพิ่มเครื่องแน่น (+20)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มเครื่องแน่น" data-price="10" id="a-extra"><label class="form-check-label" for="a-extra">เพิ่มเครื่องแน่น (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ข้าวสวย" data-price="10" id="a-rice10"><label class="form-check-label" for="a-rice10">ข้าวสวย (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ไข่เจียว" data-price="15" id="a-egg15"><label class="form-check-label" for="a-egg15">ไข่เจียว (+15)</label></div>
         `;
     } else if (category === 'ยำ') {
         addonsHtml = `
-            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มไข่เยี่ยวม้า" data-price="15" id="a-century"><label class="form-check-label" for="a-century">เพิ่มไข่เยี่ยวม้า (+15)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มหมูยอ" data-price="20" id="a-mooyor"><label class="form-check-label" for="a-mooyor">เพิ่มหมูยอ (+20)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มไข่เยี่ยวม้า" data-price="10" id="a-century"><label class="form-check-label" for="a-century">เพิ่มไข่เยี่ยวม้า (+10)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="เพิ่มหมูยอ" data-price="10" id="a-mooyor"><label class="form-check-label" for="a-mooyor">เพิ่มหมูยอ (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ข้าวเหนียว" data-price="10" id="a-sticky2"><label class="form-check-label" for="a-sticky2">ข้าวเหนียว (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ขนมจีน" data-price="10" id="a-noodle"><label class="form-check-label" for="a-noodle">ขนมจีน (+10)</label></div>
         `;
@@ -226,12 +227,12 @@ function generateModalOptions(name, category, product) {
         addonsHtml = `
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ข้าวเหนียว" data-price="10" id="a-sticky3"><label class="form-check-label" for="a-sticky3">ข้าวเหนียว (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ข้าวสวย" data-price="10" id="a-rice10b"><label class="form-check-label" for="a-rice10b">ข้าวสวย (+10)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="พิเศษเพิ่มชิ้น" data-price="20" id="a-more"><label class="form-check-label" for="a-more">พิเศษเพิ่มชิ้น (+20)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="พิเศษเพิ่มชิ้น" data-price="10" id="a-more"><label class="form-check-label" for="a-more">พิเศษเพิ่มชิ้น (+10)</label></div>
         `;
     } else {
         addonsHtml = `
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="พิเศษ เพิ่มข้าว" data-price="10" id="a-rice"><label class="form-check-label" for="a-rice">พิเศษ เพิ่มข้าว (+10)</label></div>
-            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="พิเศษ เพิ่มกับ" data-price="20" id="a-meat"><label class="form-check-label" for="a-meat">พิเศษ เพิ่มกับ (+20)</label></div>
+            <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="พิเศษ เพิ่มกับ" data-price="10" id="a-meat"><label class="form-check-label" for="a-meat">พิเศษ เพิ่มกับ (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ไข่ดาว" data-price="10" id="a-egg1"><label class="form-check-label" for="a-egg1">เพิ่มไข่ดาว (+10)</label></div>
             <div class="form-check mb-2"><input class="form-check-input addon-option" type="checkbox" value="ไข่เจียว" data-price="15" id="a-egg2"><label class="form-check-label" for="a-egg2">เพิ่มไข่เจียว (+15)</label></div>
         `;

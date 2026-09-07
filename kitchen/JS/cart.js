@@ -20,19 +20,19 @@ function renderCart() {
             <tr>
                 <td>
                     <div class="d-flex align-items-center">
-                        <img src="${item.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" class="me-3 shadow-sm">
+                        <img src="${item.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" class="me-3 shadow-sm" loading="lazy">
                         <span class="fw-bold">${item.name}</span>
                         ${item.options ? `<br><small class="text-danger fw-bold" style="font-size:0.8em;">(${item.options})</small>` : ''}
                     </div>
                 </td>
-                <td>฿${Number(item.price).toLocaleString()}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${index}, -1)">-</button>
+                <td data-label="ราคา">฿${Number(item.price).toLocaleString()}</td>
+                <td data-label="จำนวน">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${index}, -1)" aria-label="ลดจำนวน">-</button>
                     <span class="mx-2 fw-bold">${item.quantity}</span>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${index}, 1)">+</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${index}, 1)" aria-label="เพิ่มจำนวน">+</button>
                 </td>
-                <td class="text-danger fw-bold">฿${Number(totalItemPrice).toLocaleString()}</td>
-                <td><button class="btn btn-sm btn-danger shadow-sm" onclick="removeFromCart(${index})">ลบ</button></td>
+                <td data-label="ราคารวม" class="text-danger fw-bold">฿${Number(totalItemPrice).toLocaleString()}</td>
+                <td data-label="จัดการ"><button class="btn btn-sm btn-danger shadow-sm" onclick="removeFromCart(${index})">ลบ</button></td>
             </tr>`;
         });
     }

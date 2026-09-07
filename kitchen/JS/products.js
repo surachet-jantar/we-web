@@ -75,6 +75,7 @@ function renderFilteredProducts() {
         let pId = getProductField(p, ['id','ID','product_id'], '');
         let pName = getProductField(p, ['name','Name'], 'ไม่มีชื่อเมนู');
         let pPrice = getProductField(p, ['price','Price'], 0);
+        let pUnit = getProductField(p, ['unit','Unit'], 'ต่อจาน');
         let pStock = getProductField(p, ['stock','Stock'], 0);
         let pImage = getProductField(p, ['image','Image'], 'https://via.placeholder.com/250');
         let pDetailRaw = getProductField(p, ['detail','Detail'], 'ไม่มีรายละเอียด');
@@ -84,17 +85,17 @@ function renderFilteredProducts() {
         let stockBadge = pStock > 0 ? `<span class="badge bg-success badge-custom">พร้อมเสิร์ฟ</span>` : `<span class="badge bg-danger badge-custom">วัตถุดิบหมด</span>`;
         let catBadge = `<span class="badge bg-dark bg-opacity-75 position-absolute" style="top:15px; right:15px; z-index:10; font-size:0.75rem;">${pCat}</span>`;
         html += `
-            <div class="col-md-4 mb-4">
+            <div class="col-12 col-sm-6 col-lg-4 mb-4">
                 <div class="card h-100 shadow-sm position-relative border-0">
                     ${stockBadge}
                     ${catBadge}
-                    <img src="${pImage}" class="card-img-top product-img" alt="${pName}">
+                    <img src="${pImage}" class="card-img-top product-img" alt="${pName}" loading="lazy">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-bold text-dark mb-1">${pName}</h5>
                         <p class="card-text text-muted small mb-2" style="white-space: pre-line;">${pDetail}</p>
                         <div class="mt-auto pt-3 border-top">
-                            <h4 class="text-danger fw-bold mb-2">฿${formattedPrice}</h4>
-                            <p class="text-secondary small mb-3">ทำได้อีก: ${pStock} ที่</p>
+                            <h4 class="text-danger fw-bold mb-1">฿${formattedPrice} <small class="text-muted fw-normal" style="font-size:0.6em;">${pUnit}</small></h4>
+                            <p class="text-secondary small mb-3">ทำได้อีก: ${pStock} ${pUnit.replace('ต่อ','')}</p>
                             <button class="btn btn-warning w-100 fw-bold text-dark shadow-sm" onclick="openOrderModal('${pId}')" ${pStock <= 0 ? 'disabled' : ''}> 🛒 สั่งเมนูนี้</button>
                         </div>
                     </div>
